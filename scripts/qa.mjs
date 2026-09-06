@@ -42,6 +42,29 @@ const setProgress = async (page, p) =>
     await new Promise((r) => setTimeout(r, 1500))
   }, p)
 
+/**
+ * Is there an image on screen at all?
+ *
+ * The film layer carries the picture for most chapters now, so reading the
+ * WebGL canvas alone would report a blank frame on a chapter that is in fact
+ * showing a fully loaded plate. A stop passes if the canvas has content, or a
+ * plate is up and its media has actually decoded.
+ */
+const plateStats = (page) =>
+  page.evaluate(() => {
+    let best = null
+    document.querySelectorAll('.plate').forEach((el) => {
+      const o = Number(getComputedStyle(el).opacity)
+      if (o < 0.5) return
+      const m = el.querySelector('img, video')
+      if (!m) return
+      const w = m.tagName === 'VIDEO' ? m.videoWidth || m.naturalWidth : m.naturalWidth
+      const loaded = m.tagName === 'VIDEO' ? m.readyState >= 2 || w > 0 : m.complete && w > 0
+      if (!best || o > best.opacity) best = { opacity: Number(o.toFixed(2)), w: w || 0, loaded: !!loaded }
+    })
+    return best ?? { opacity: 0, w: 0, loaded: false }
+  })
+
 const canvasStats = (page) =>
   page.evaluate(() => {
     const c = document.querySelector('canvas')
@@ -143,10 +166,11 @@ const run = async () => {
     for (const [label, p] of stops) {
       await setProgress(page, p)
       const stats = await canvasStats(page)
+      const plate = await plateStats(page)
       const overlap = await overlapCheck(page)
       const shot = path.join(dir, `${label}.png`)
       await page.screenshot({ path: shot })
-      vRep.stops.push({ label, p, stats, overlap: overlap.hits, overflowX: overlap.overflowX, shot: path.relative(process.cwd(), shot) })
+      vRep.stops.push({ label, p, stats, plate, overlap: overlap.hits, overflowX: overlap.overflowX, shot: path.relative(process.cwd(), shot) })
     }
 
     // full DOM text for business QA (desktop only, all copy is rendered at all times)
@@ -192,8 +216,13 @@ const run = async () => {
   const overlaps = []
   report.viewports.forEach((v) =>
     v.stops.forEach((s) => {
-      if (!s.stats.ok || s.stats.range < 12 || s.stats.colours < 6)
-        blanks.push(`${v.name}/${s.label} range=${s.stats.range} colours=${s.stats.colours}`)
+      const canvasHasImage = s.stats.ok && s.stats.range >= 12 && s.stats.colours >= 6
+      const filmHasImage = s.plate && s.plate.loaded && s.plate.w > 0 && s.plate.opacity >= 0.5
+      if (!canvasHasImage && !filmHasImage)
+        blanks.push(
+          `${v.name}/${s.label} canvas(range=${s.stats.range} colours=${s.stats.colours}) ` +
+            `plate(op=${s.plate?.opacity} w=${s.plate?.w} loaded=${s.plate?.loaded})`,
+        )
       if (s.overlap.length) overlaps.push(`${v.name}/${s.label}: ${s.overlap.join('; ')}`)
       if (s.overflowX) overlaps.push(`${v.name}/${s.label}: horizontal overflow`)
     }),

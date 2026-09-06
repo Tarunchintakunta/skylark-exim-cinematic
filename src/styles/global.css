@@ -54,7 +54,16 @@ canvas { display: block; touch-action: pan-y; }
   z-index: 3;
   pointer-events: none;
   overflow: hidden;
+  /* deliberately transparent: where no plate is up, the globe shows through */
 }
+/* foreground atmosphere and film grade, over the plates and under the copy */
+.fx-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+.fx-layer canvas { display: block; }
 .plate {
   position: absolute;
   inset: 0;
@@ -73,10 +82,8 @@ canvas { display: block; touch-action: pan-y; }
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(4, 34, 44, 0.34) 0%, rgba(4, 34, 44, 0) 26%,
-                    rgba(4, 34, 44, 0) 62%, rgba(4, 34, 44, 0.42) 100%),
-    radial-gradient(120% 90% at 50% 45%, rgba(14, 111, 142, 0) 40%, rgba(6, 38, 52, 0.42) 100%);
-  mix-blend-mode: normal;
+    linear-gradient(180deg, rgba(4, 26, 34, 0.30) 0%, rgba(4, 26, 34, 0) 22%,
+                    rgba(4, 26, 34, 0) 64%, rgba(4, 26, 34, 0.46) 100%);
 }
 
 .veil {
@@ -206,9 +213,9 @@ canvas { display: block; touch-action: pan-y; }
   content: '';
   position: absolute; inset: 0;
   background:
-    linear-gradient(100deg, rgba(4, 30, 40, 0.80) 0%, rgba(4, 30, 40, 0.55) 26%,
-                    rgba(4, 30, 40, 0.18) 48%, rgba(4, 30, 40, 0) 66%),
-    linear-gradient(0deg, rgba(4, 30, 40, 0.52) 0%, rgba(4, 30, 40, 0) 32%);
+    linear-gradient(96deg, rgba(3, 20, 28, 0.86) 0%, rgba(3, 20, 28, 0.62) 22%,
+                    rgba(3, 20, 28, 0.20) 42%, rgba(3, 20, 28, 0) 58%),
+    linear-gradient(0deg, rgba(3, 20, 28, 0.58) 0%, rgba(3, 20, 28, 0) 26%);
   pointer-events: none;
 }
 
@@ -247,16 +254,21 @@ canvas { display: block; touch-action: pan-y; }
   text-shadow: 0 1px 18px rgba(4, 34, 44, 0.7);
 }
 .chapter-copy .facts {
-  display: flex; flex-wrap: wrap; gap: 7px; margin-top: 18px;
+  display: flex; flex-wrap: wrap; align-items: center;
+  margin-top: 20px; padding-top: 14px;
+  border-top: 1px solid rgba(214, 236, 242, 0.16);
+  max-width: min(620px, 46vw);
 }
 .chapter-copy .facts span {
-  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em;
   text-transform: uppercase;
-  border: 1px solid var(--hud-line);
-  background: rgba(6, 34, 44, 0.38);
-  backdrop-filter: blur(6px);
-  padding: 6px 10px; border-radius: 2px;
-  color: rgba(234, 246, 249, 0.9);
+  color: rgba(228, 242, 246, 0.62);
+  white-space: nowrap;
+}
+.chapter-copy .facts span + span::before {
+  content: '/';
+  margin: 0 10px;
+  color: rgba(214, 236, 242, 0.26);
 }
 
 .hero-mark {
@@ -280,8 +292,20 @@ canvas { display: block; touch-action: pan-y; }
   margin-bottom: 22px;
 }
 .hero-mark .lede {
-  font-size: clamp(15px, 1.3vw, 19px); line-height: 1.6;
-  max-width: 48ch; color: rgba(244, 250, 250, 0.88);
+  font-size: clamp(14px, 1.05vw, 16.5px); line-height: 1.62;
+  max-width: 40ch; color: rgba(240, 248, 250, 0.80);
+  font-weight: 350;
+}
+.hero-meta {
+  margin-top: 26px; padding-top: 15px;
+  border-top: 1px solid rgba(214, 236, 242, 0.18);
+  max-width: min(560px, 44vw);
+  display: flex; flex-wrap: nowrap; align-items: center;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: rgba(228, 242, 246, 0.58);
+}
+.hero-meta span + span::before {
+  content: '/'; margin: 0 10px; color: rgba(214, 236, 242, 0.26);
 }
 .scroll-hint {
   position: fixed; left: 50%; bottom: 46px; transform: translateX(-50%);
@@ -304,12 +328,13 @@ canvas { display: block; touch-action: pan-y; }
   will-change: opacity, transform;
 }
 .hud-card {
-  background: var(--hud-bg);
-  backdrop-filter: blur(14px) saturate(1.1);
-  -webkit-backdrop-filter: blur(14px) saturate(1.1);
-  border: 1px solid var(--hud-line);
+  background: linear-gradient(180deg, rgba(3, 20, 28, 0.86) 0%, rgba(3, 20, 28, 0.80) 100%);
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+  border: 1px solid rgba(214, 236, 242, 0.20);
   border-radius: 4px;
   overflow: hidden;
+  box-shadow: 0 18px 60px rgba(2, 14, 20, 0.45);
 }
 .hud-head {
   display: flex; align-items: center; justify-content: space-between;
@@ -547,7 +572,8 @@ canvas { display: block; touch-action: pan-y; }
   .hero-mark .lede { font-size: 14px; }
   .chapter-copy h2 { font-size: clamp(21px, 6.2vw, 32px); }
   .chapter-copy p { font-size: 13.5px; }
-  .chapter-copy .facts span, .hero-mark .facts span { font-size: 9px; padding: 5px 8px; }
+  .chapter-copy .facts span, .hero-meta span { font-size: 9px; letter-spacing: 0.12em; }
+  .chapter-copy .facts span + span::before, .hero-meta span + span::before { margin: 0 7px; }
   /* only the readings a buyer actually needs survive the narrowest screen */
   .hud-row:nth-child(n + 6) { display: none; }
   .hud-card { grid-template-columns: 92px minmax(0, 1fr); }

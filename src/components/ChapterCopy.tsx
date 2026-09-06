@@ -88,29 +88,13 @@ function HeroBlock() {
       <div className="sub">Two Origins. One Standard.</div>
       <h1>Caught in the Bay.<br />Delivered to the world.</h1>
       <p className="lede">
-        Skylark Exim moves seafood from the Bay of Bengal and the aquaculture ponds of the Andhra
-        coast to buyers in Europe, the Gulf, East Asia and North America. A shipment begins long
-        before the container is sealed.
+        Swordfish and tuna from the Bay of Bengal. Shrimp from the aquaculture ponds of the
+        Andhra coast. A shipment begins long before the container is sealed.
       </p>
-      <div className="facts" style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginTop: 22 }}>
-        {['Swordfish', 'Tuna', 'Shrimp', 'Visakhapatnam', 'HACCP · EIC'].map((f) => (
-          <span
-            key={f}
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              border: '1px solid var(--hud-line)',
-              background: 'rgba(6,34,44,0.38)',
-              backdropFilter: 'blur(6px)',
-              padding: '6px 10px',
-              borderRadius: 2,
-              color: 'rgba(234,246,249,0.9)',
-            }}
-          >
-            {f}
-          </span>
+      {/* a caption line, the way a film titles a location, not a row of buttons */}
+      <div className="hero-meta">
+        {['Visakhapatnam · India', 'HACCP', 'EIC'].map((f) => (
+          <span key={f}>{f}</span>
         ))}
       </div>
     </div>

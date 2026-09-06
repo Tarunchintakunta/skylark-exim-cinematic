@@ -17,6 +17,7 @@ import { CompassHUD } from '@/components/CompassHUD'
 import { ChapterCopy } from '@/components/ChapterCopy'
 import { TopBar, ChapterRail, ProgressBar, ClosingLine } from '@/components/Navigation'
 import { CinematicPlates } from '@/components/CinematicPlates'
+import { FilmFx } from '@/components/FilmFx'
 import { RFQ } from '@/components/RFQ'
 import { Loader, NoWebGL } from '@/components/Loader'
 
@@ -53,6 +54,20 @@ const bounds = (id: string): [number, number] => {
 }
 
 const MOUNT_PAD = 0.035
+
+/**
+ * Which districts still get built.
+ *
+ * The film carries chapters 1 to 20 now, so the modelled versions of those
+ * scenes sit behind an opaque plate and are never seen. Building them anyway
+ * cost tens of megabytes of GLB and a lot of GPU for nothing, and risked the
+ * modelled look surfacing through a gap. The globe is the one place the site
+ * still wants real geometry, because the routes have to be dimensional.
+ *
+ * The other stages are intact in src/scenes and in the asset manifest. Widen
+ * this set to bring one back.
+ */
+const LIVE_STAGES = new Set(['globe'])
 
 function detectWebGL() {
   try {
@@ -93,7 +108,8 @@ export default function App() {
     let changed = false
     Object.keys(STAGE_RANGE).forEach((id) => {
       const [lo, hi] = bounds(id)
-      const on = progress > lo - MOUNT_PAD && progress < hi + MOUNT_PAD
+      const on =
+        LIVE_STAGES.has(id) && progress > lo - MOUNT_PAD && progress < hi + MOUNT_PAD
       next[id] = on
       if (!!mounted[id] !== on) changed = true
     })
@@ -150,7 +166,7 @@ export default function App() {
             }
           }}
         >
-          <color attach="background" args={['#bfe0ec']} />
+          <color attach="background" args={['#04141c']} />
           <CameraDirector onCut={onCut} />
           <SceneEnvironment intensity={0.34} />
           <Suspense fallback={null}>
@@ -221,6 +237,7 @@ export default function App() {
       </div>
 
       <CinematicPlates />
+      <FilmFx />
 
       <div className="veil" ref={veil} />
 
