@@ -116,7 +116,11 @@ void main() {
   foam += smoothstep(0.960, 1.0, vCrest) * 0.26;
 
   vec3 col = mix(base, uSky, fres * 0.55);
-  col += vec3(1.0, 0.96, 0.86) * (spec + sheen);
+  // water reflects weakly when you look straight down at it and strongly at
+  // grazing angles. Without this the aerial chapter caught a full-frame sheen
+  // that washed the open Bay to grey and swallowed the wake.
+  float glint = 0.25 + 0.75 * pow(1.0 - clamp(dot(n, viewDir), 0.0, 1.0), 1.5);
+  col += vec3(1.0, 0.96, 0.86) * (spec + sheen) * glint;
   col = mix(col, uFoam, clamp(foam, 0.0, 0.62));
 
   // humid coastal haze toward the horizon
