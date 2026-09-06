@@ -58,7 +58,7 @@ export const cinematicPlates: CinematicPlate[] = [
     chapter: 'ch07-onboard-cold-storage',
     still: `${S}/ch07-chilled-hold.jpg`,
     video: `${V}/ch07-chilled-hold.mp4`,
-    from: 0.54, to: 0.94, peak: 1,
+    from: 0.34, to: 0.94, peak: 1,
     alt: 'The catch stowed in clean onboard chilled storage',
   },
   {
@@ -140,7 +140,7 @@ export const cinematicPlates: CinematicPlate[] = [
     chapter: 'ch20-container-vessel',
     still: `${S}/ch20-container-vessel.jpg`,
     video: `${V}/ch20-container-vessel.mp4`,
-    from: 0.52, to: 0.94, peak: 1,
+    from: 0.38, to: 0.94, peak: 1,
     alt: 'A container vessel leaving Visakhapatnam in deep blue water',
   },
 ]
