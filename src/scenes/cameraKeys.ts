@@ -68,11 +68,11 @@ export const camKeys: CamKey[] = [
   { p: at('ch14-grading', 1), stage: 'plant', pos: [-2.0, 2.15, -1.6], target: [3.0, 1.05, -6.2], fov: 44 },
   // 15 QC
   { p: at('ch15-qc-and-residue-testing', 0.02), stage: 'qc', pos: [-3.4, 2.0, 2.9], target: [1.0, 1.15, -2.0], fov: 52 },
-  { p: at('ch15-qc-and-residue-testing', 0.55), stage: 'qc', pos: [-0.4, 1.72, 1.15], target: [-2.3, 1.25, -2.2], fov: 46 },
-  { p: at('ch15-qc-and-residue-testing', 1), stage: 'qc', pos: [1.2, 1.78, 1.3], target: [2.7, 1.15, -2.0], fov: 46 },
+  { p: at('ch15-qc-and-residue-testing', 0.55), stage: 'qc', pos: [-0.2, 1.95, 2.15], target: [-2.0, 1.25, -2.1], fov: 50 },
+  { p: at('ch15-qc-and-residue-testing', 1), stage: 'qc', pos: [1.1, 2.0, 2.3], target: [2.5, 1.15, -1.9], fov: 50 },
   // 16 freezing and glazing
   { p: at('ch16-freezing-and-glazing', 0.02), stage: 'freeze', pos: [-9.4, 2.6, 5.1], target: [4.0, 1.6, 1.5], fov: 54 },
-  { p: at('ch16-freezing-and-glazing', 0.55), stage: 'freeze', pos: [-3.4, 3.15, 5.35], target: [1.6, 1.85, 2.6], fov: 44 },
+  { p: at('ch16-freezing-and-glazing', 0.55), stage: 'freeze', pos: [-5.6, 3.05, 5.45], target: [2.2, 1.80, 2.5], fov: 50 },
   { p: at('ch16-freezing-and-glazing', 1), stage: 'freeze', pos: [6.2, 2.35, 5.1], target: [9.4, 1.55, 2.2], fov: 44 },
   // 17 cold storage — the aisle
   { p: at('ch17-packing-and-cold-storage', 0.02), stage: 'coldstore', pos: [-17.0, 2.6, 0], target: [16, 3.0, 0], fov: 58 },
