@@ -1,9 +1,8 @@
 # Skylark Exim — Cinematic Scroll Website
 
-A single-page WebGL voyage for an Indian seafood exporter. Scroll is the only
-control: it moves the camera, cuts between stages, scrubs baked model animation,
-drives the navigation HUD, dissolves between the 3D world and real footage, and
-reveals every line of copy. There are no static sections.
+A single-page cinematic voyage for an Indian seafood exporter. Scroll is the
+only control: it scrubs the film frame by frame, turns the globe, and reveals
+every line of copy. There are no static sections.
 
 > **Two Origins. One Standard.**
 
@@ -39,36 +38,32 @@ environment variable to set.
 
 ## The story
 
-Twenty-two chapters on one continuous timeline:
+Eighteen chapters on one continuous timeline:
 
-Opening port → boarding → compass and conditions → into the Bay of Bengal →
-nets and the haul → swordfish and tuna → onboard chilled storage → return to
-Vizag → cold-chain transfer → processing → cutting → Andhra ponds → product
-forms → grading → QC and residue testing → freezing and glazing → packing and
-cold storage → export documents → reefer loading → container vessel → globe and
+Visakhapatnam port at ten → the crew boards → the Bay of Bengal → nets over the
+rail → swordfish and tuna, the hero catch → onboard chilled storage → return to
+Vizag and the cold-chain transfer → the processing hall → cutting, filleting,
+portioning → the Andhra ponds, the second origin → shrimp processing, product
+forms and grading → QC and residue testing → freezing and glazing → cold
+storage → reefer loading and the export papers → the container vessel → global
 routes → RFQ.
 
 ## Architecture
 
 | Path | What it holds |
 | --- | --- |
-| `src/timeline/chapters.ts` | The 22 chapters, their scroll weights and normalised ranges |
+| `src/timeline/chapters.ts` | The 18 chapters, their copy, scroll weights and normalised ranges |
 | `src/timeline/useScrollTimeline.ts` | Lenis smoothing plus one master GSAP ScrollTrigger |
-| `src/scenes/cameraKeys.ts` | The camera path, two to five keys per chapter |
-| `src/scenes/CameraDirector.tsx` | Interpolates inside a stage, hard-cuts between stages |
-| `src/scenes/OceanStage.tsx` | Ocean shader, sky, harbour, vessel, Kelvin wake, fishing action, catch station |
-| `src/scenes/InteriorStages.tsx` | Hold, quay, plant, ponds, QC, freezing, cold store, docs, reefer, fleet, globe |
-| `src/scenes/kit.tsx` | District offsets, GLB loading, scroll-scrubbed animation, node selection |
-| `src/scenes/SceneEnvironment.tsx` | Generated studio environment so metals are not black |
-| `src/shaders/ocean.ts` | Five-band Gerstner sum with sun glint, crest foam and coastal haze |
-| `src/components/CinematicPlates.tsx` | The film cuts: photoreal footage dissolving over the 3D |
-| `src/components/CompassHUD.tsx` | Maritime navigation HUD, every reading derived from scroll |
+| `src/components/FilmStrip.tsx` | The film: one frame per scroll position drawn to a 2D canvas |
+| `src/data/cinematicPlates.ts` | Which strips make up each chapter, and each strip's still |
+| `src/components/ChapterCopy.tsx` | The captions and data rows, timed to their chapters |
+| `src/scenes/InteriorStages.tsx` | The globe (the only WebGL district still built) and the dormant districts |
+| `src/scenes/cameraKeys.ts` | The globe camera path |
 | `src/components/RFQ.tsx` | Buyer console, React Hook Form plus Zod |
 | `src/data/assetManifest.ts` | Every asset with source tool, status and optimisation notes |
-| `src/data/cinematicPlates.ts` | Which chapter cuts to which plate, and when |
+| `scripts/make-frames.mjs` | Cuts the scrub strips from the clip masters |
 
-Stages live in separate world districts and mount only near their own chapters,
-so the GPU never carries the whole film at once.
+The WebGL canvas is not mounted until the globe chapter is in reach.
 
 ## Stack
 
@@ -92,28 +87,14 @@ package: chapter plates rendered from the exact website cameras, hero turntable
 frames, and `collector_manifest.json` carrying per-chapter prompts and camera
 data.
 
-## Cinematic plates
+## The film
 
-Seventeen photoreal stills and thirteen five-second loops were generated with
-Higgsfield, each seeded from the Blender collector frame for that chapter, so a
-cut lands on the same framing instead of jumping. `CinematicPlates` dissolves
-them over the WebGL scene for one beat per chapter and dissolves away again.
-Video decodes only while its plate is on screen, and reduced-motion visitors get
-the still.
-
-Run steps for regenerating them are in `scripts/higgsfield-submit.md`.
-
-## Notable shots
-
-Chapter 4 climbs to a near-vertical aerial of the vessel underway, held for a
-beat before dropping back to sea level. Water deepens toward navy away from the
-harbour so white foam reads from overhead, and the wake deforms on the same
-Gerstner field as the ocean rather than being a flat quad the swell cuts
-through.
-
-Chapter 5 puts the crew on the gear: a hauling team bringing a full net bag over
-the rail, a cast net in flight, mixed catch landing on deck, all scrubbed by
-scroll. Chapter 6 lands swordfish and tuna into an insulated bin on crushed ice.
+Eighteen stills and eighteen five-second clips were generated with Higgsfield:
+stills with `nano_banana_pro` at 2k, or 4k for the nets, cutting, ponds and
+shrimp scenes, and clips with `seedance_2_0` at 1080p from each still. Every
+frame was checked by eye before it went in: nobody standing in the sea, no red
+meat on a cutting table, swordfish with a bill and tuna with yellow finlets, no
+soft or muddy plate. Run steps are in `scripts/higgsfield-submit.md`.
 
 ## Visual direction
 
@@ -126,18 +107,25 @@ single 2D canvas — one frame per scroll position, exactly, and one composited
 layer for the whole film.
 
 `scripts/make-frames.mjs` builds the strips from `media-src/video`: AVIF at
-1440x810 for the full-resolution strip, a small WebP of every frame that loads
-first so scrubbing works immediately and stands in for browsers without AVIF,
-and a desktop and mobile set each. `public/assets/frames/frames.json` indexes
-them. `src/components/FilmStrip.tsx` draws them.
+1920x1080 for the desktop strip and 1280x720 for mobile, plus a small WebP of
+every frame that loads first so scrubbing works immediately and stands in for
+browsers without AVIF. `public/assets/frames/frames.json` indexes them.
+`src/components/FilmStrip.tsx` draws them. A chapter can carry two strips
+(the return and the quay transfer, the peeling line and the product forms):
+its scroll band is split between them and the film cuts halfway.
 
-Decoded frames are uncompressed: a 1440x810 bitmap is 4.7 MB, so one strip
-costs about 190 MB resident. The scrubber holds the current strip and one
+Decoded frames are uncompressed: a 1920x1080 bitmap is 8.3 MB, so one strip
+costs about 330 MB resident. The scrubber holds the current strip and one
 either side and closes the rest, which is the difference between a smooth page
 and a tab that stalls.
 
-Chapters 1 to 8 are anchored to one hero vessel reference, so the same ship
+Chapters 1 to 7 are anchored to one hero vessel reference, so the same ship
 leaves Visakhapatnam, works the Bay and comes home.
+
+There is no instrument panel. The data a buyer needs sits in a hairline row
+under each caption: product forms and count grades under the shrimp chapter,
+temperatures and pallet capacity under the cold store, the document set under
+the reefer.
 
 WebGL is now only the globe, and its canvas is not mounted at all until the
 globe chapter is in reach — a full-viewport canvas left mounted is another large

@@ -337,29 +337,30 @@ export const assetManifest: AssetEntry[] = [
     fallbackPath: `${R}/`,
   },
   {
-    id: 'higgsfield_cinematic_plates',
-    name: 'Higgsfield Cinematic Scene Plates',
+    id: 'higgsfield_film',
+    name: 'Higgsfield Film Strips and Stills',
     type: 'video',
     sourceTool: 'higgsfield',
-    filePath: '/assets/media/higgsfield/',
-    scene: 'chapters 1 to 20 (the base image of the site)',
+    filePath: '/assets/frames/ and /assets/media/higgsfield/stills/',
+    scene: 'chapters 1 to 16 (the whole picture of the site)',
     status: 'integrated',
     animationNotes:
-      'Twenty-two stills and nineteen five-second clips, one plate per chapter from 1 to 20. ' +
-      'Each was seeded from the Blender collector frame for its chapter so the framing matches ' +
-      'the camera the scene was blocked for; see collector/collector_manifest.json for the ' +
-      'prompts, the shared negative prompt and the exact camera per shot. Chapters 1 to 8 are ' +
-      'additionally anchored to one hero vessel reference so the same ship sails the whole ' +
-      'ocean act. A plate holds its entire chapter, carries a slow camera move and gives way ' +
-      'only once the next has covered it; clips run faster the faster the visitor scrolls.',
+      'Eighteen five-second clips across sixteen chapters (return-and-transfer and ' +
+      'shrimp-and-forms each cut between two), every one generated at 1080p with ' +
+      'seedance_2_0 from its own still. The clips are not served: scripts/make-frames.mjs ' +
+      'explodes each into a scrub strip and src/components/FilmStrip.tsx draws one frame ' +
+      'per scroll position. Prompts carried the shared negative list (no toy boat, no ' +
+      'person in the water, no red meat, no deformed hands, no text, no blur). Job ids are ' +
+      'in collector/image_jobs.json.',
     scaleNotes:
-      '16:9. Stills 1920 wide. The clips are no longer served: scripts/make-frames.mjs ' +
-      'explodes each into a scrub strip under public/assets/frames, AVIF at 1440x810 for ' +
-      'desktop and 960x540 for mobile, with a small WebP of every frame as the instant-load ' +
-      'and no-AVIF path. The masters stay in media-src/video so the strips can be rebuilt.',
+      '16:9. Stills at native generation size, 2752 wide (nano_banana_pro 2k) or 3840 wide ' +
+      '(the four 4k regenerations: nets, cutting, ponds, shrimp; 5504-wide masters in ' +
+      'media-src/stills). Strips are AVIF at 1920x1080 for desktop and 1280x720 for ' +
+      'mobile, with a 640-wide WebP of every frame as the instant-load and no-AVIF path. ' +
+      'The 1080p masters stay in media-src/video so the strips can be rebuilt.',
     optimizationNotes:
-      '62 MB of frames and 6.9 MB of stills. The scrubber holds three strips at a time and ' +
-      'closes the rest; decoded frames are 4.7 MB each, so nothing else is affordable.',
+      'Posters 15 MB across eighteen files, fetched one chapter ahead. The scrubber holds ' +
+      'three strips at a time and closes the rest; a decoded 1920x1080 frame is 8.3 MB.',
     fallbackPath: `${F}/`,
   },
 ]

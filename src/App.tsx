@@ -13,7 +13,6 @@ import {
   HoldStage, QuayStage, PlantStage, PondsStage, QCStage,
   FreezeStage, ColdStoreStage, DocsStage, ReeferStage, FleetStage, GlobeStage,
 } from '@/scenes/InteriorStages'
-import { CompassHUD } from '@/components/CompassHUD'
 import { ChapterCopy } from '@/components/ChapterCopy'
 import { TopBar, ChapterRail, ProgressBar, ClosingLine } from '@/components/Navigation'
 import { FilmStrip } from '@/components/FilmStrip'
@@ -21,35 +20,25 @@ import { RFQ } from '@/components/RFQ'
 import { Loader, NoWebGL } from '@/components/Loader'
 
 const STAGE_RANGE: Record<string, [string, string]> = {
-  ocean: ['ch01-opening-port', 'ch08-return-to-port'],
-  hold: ['ch07-onboard-cold-storage', 'ch07-onboard-cold-storage'],
-  quay: ['ch09-cold-chain-transfer', 'ch09-cold-chain-transfer'],
-  plant: ['ch10-processing-arrival', 'ch11-cutting'],
-  ponds: ['ch12-pond-origin', 'ch13-product-forms'],
-  qc: ['ch15-qc-and-residue-testing', 'ch15-qc-and-residue-testing'],
-  freeze: ['ch16-freezing-and-glazing', 'ch16-freezing-and-glazing'],
-  coldstore: ['ch17-packing-and-cold-storage', 'ch17-packing-and-cold-storage'],
-  docs: ['ch18-export-documents', 'ch18-export-documents'],
-  reefer: ['ch19-reefer-containers', 'ch19-reefer-containers'],
-  fleet: ['ch20-container-vessel', 'ch20-container-vessel'],
-  globe: ['ch21-globe-and-routes', 'ch22-rfq'],
-}
-// grading returns to the plant later in the film
-const EXTRA: Record<string, [string, string][]> = {
-  plant: [['ch14-grading', 'ch14-grading']],
+  ocean: ['c01-port', 'c07-return'],
+  hold: ['c06-hold', 'c06-hold'],
+  quay: ['c07-return', 'c07-return'],
+  plant: ['c08-intake', 'c09-cutting'],
+  ponds: ['c10-ponds', 'c11-shrimp'],
+  qc: ['c12-qc', 'c12-qc'],
+  freeze: ['c13-freezing', 'c13-freezing'],
+  coldstore: ['c14-coldstore', 'c14-coldstore'],
+  docs: ['c15-reefer', 'c15-reefer'],
+  reefer: ['c15-reefer', 'c15-reefer'],
+  fleet: ['c16-vessel', 'c16-vessel'],
+  globe: ['c17-routes', 'c18-rfq'],
 }
 
 const bounds = (id: string): [number, number] => {
   const [a, b] = STAGE_RANGE[id]
   const A = chapters.find((c) => c.id === a)!
   const B = chapters.find((c) => c.id === b)!
-  let lo = A.start
-  let hi = B.end
-  ;(EXTRA[id] ?? []).forEach(([x, y]) => {
-    lo = Math.min(lo, chapters.find((c) => c.id === x)!.start)
-    hi = Math.max(hi, chapters.find((c) => c.id === y)!.end)
-  })
-  return [lo, hi]
+  return [A.start, B.end]
 }
 
 const MOUNT_PAD = 0.035
@@ -57,7 +46,7 @@ const MOUNT_PAD = 0.035
 /**
  * Which districts still get built.
  *
- * The film carries chapters 1 to 20 now, so the modelled versions of those
+ * The film carries chapters 1 to 16 now, so the modelled versions of those
  * scenes sit behind an opaque plate and are never seen. Building them anyway
  * cost tens of megabytes of GLB and a lot of GPU for nothing, and risked the
  * modelled look surfacing through a gap. The globe is the one place the site
@@ -261,7 +250,6 @@ export default function App() {
       <TopBar />
       <ChapterRail />
       <ChapterCopy />
-      <CompassHUD />
       <RFQ />
       <ClosingLine />
       <Loader />

@@ -12,15 +12,16 @@ const VIEWPORTS = [
   { name: 'mobile-390x844', width: 390, height: 844, mobile: true },
 ]
 
-// scroll stops, one per chapter plus the hero hold
+// scroll stops, one per chapter (two for the chapters that cut between strips),
+// derived from the chapter weights in src/timeline/chapters.ts
 const STOPS = [
-  ['01-port', 0.005], ['02-boarding', 0.055], ['03-compass', 0.105],
-  ['04-bay', 0.16], ['05-nets', 0.215], ['06-catch', 0.265],
-  ['07-hold', 0.325], ['08-return', 0.372], ['09-transfer', 0.412],
-  ['10-plant', 0.452], ['11-cutting', 0.492], ['12-ponds', 0.54],
-  ['13-forms', 0.592], ['14-grading', 0.638], ['15-qc', 0.70],
-  ['16-freezing', 0.762], ['17-coldstore', 0.812], ['18-documents', 0.856],
-  ['19-reefer', 0.898], ['20-vessel', 0.94], ['21-globe', 0.975], ['22-rfq', 0.998],
+  ['c01-port', 0.005], ['c02-boarding', 0.069], ['c03-voyage', 0.119],
+  ['c04-nets', 0.183], ['c05-catch', 0.243], ['c06-hold', 0.299],
+  ['c07-return', 0.347], ['c07-return-b', 0.376], ['c08-intake', 0.403],
+  ['c09-cutting', 0.448], ['c10-ponds', 0.5], ['c11-shrimp', 0.558],
+  ['c11-shrimp-b', 0.591], ['c12-qc', 0.623], ['c13-freezing', 0.678],
+  ['c14-coldstore', 0.729], ['c15-reefer', 0.779], ['c16-vessel', 0.832],
+  ['c17-routes', 0.883], ['c18-rfq', 0.998],
 ]
 
 const REQUIRED_TERMS = [
@@ -78,7 +79,7 @@ const canvasStats = (page) =>
 
 const overlapCheck = (page) =>
   page.evaluate(() => {
-    const sel = ['.chapter-copy', '.hero-mark', '.hud', '.rfq', '.topbar', '.rail']
+    const sel = ['.chapter-copy', '.hero-mark', '.rfq', '.topbar', '.rail']
     const boxes = []
     for (const s of sel) {
       document.querySelectorAll(s).forEach((el) => {

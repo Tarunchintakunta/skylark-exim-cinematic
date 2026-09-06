@@ -79,7 +79,7 @@ function Particles({
 }
 
 export function HoldStage() {
-  const hold = ch('ch07-onboard-cold-storage')
+  const hold = ch('c06-hold')
   return (
     <group>
       <ScrubbedModel
@@ -100,7 +100,7 @@ export function HoldStage() {
 }
 
 export function QuayStage() {
-  const c = ch('ch09-cold-chain-transfer')
+  const c = ch('c07-return')
   return (
     <group>
       <ScrubbedModel
@@ -114,7 +114,7 @@ export function QuayStage() {
 }
 
 export function PlantStage() {
-  const arrival = ch('ch10-processing-arrival')
+  const arrival = ch('c08-intake')
   return (
     <group>
       <ScrubbedModel
@@ -140,11 +140,11 @@ export function PlantStage() {
 }
 
 export function PondsStage() {
-  const pond = ch('ch12-pond-origin')
+  const pond = ch('c10-ponds')
   const forms = useRef<THREE.Group>(null)
   useFrame(() => {
     const p = scrollRef.current
-    const fc = ch('ch13-product-forms')
+    const fc = ch('c11-shrimp')
     if (forms.current) {
       const a = clamp01(
         smoothstep((p - (fc.start - 0.02)) / 0.03) - smoothstep((p - (fc.end + 0.01)) / 0.03),
@@ -178,7 +178,7 @@ export function PondsStage() {
 }
 
 export function QCStage() {
-  const c = ch('ch15-qc-and-residue-testing')
+  const c = ch('c12-qc')
   return (
     <group>
       <ScrubbedModel
@@ -197,7 +197,7 @@ export function QCStage() {
 }
 
 export function FreezeStage() {
-  const c = ch('ch16-freezing-and-glazing')
+  const c = ch('c13-freezing')
   return (
     <group>
       <ScrubbedModel
@@ -223,7 +223,7 @@ export function FreezeStage() {
 }
 
 export function ColdStoreStage() {
-  const c = ch('ch17-packing-and-cold-storage')
+  const c = ch('c14-coldstore')
   return (
     <group>
       <ScrubbedModel
@@ -241,7 +241,7 @@ export function ColdStoreStage() {
 }
 
 export function DocsStage() {
-  const c = ch('ch18-export-documents')
+  const c = ch('c15-reefer')
   return (
     <group>
       <ScrubbedModel
@@ -256,7 +256,7 @@ export function DocsStage() {
 }
 
 export function ReeferStage() {
-  const c = ch('ch19-reefer-containers')
+  const c = ch('c15-reefer')
   return (
     <group>
       <ScrubbedModel
@@ -276,7 +276,7 @@ export function ReeferStage() {
 
 export function FleetStage() {
   const ship = useRef<THREE.Group>(null)
-  const fleetCh = ch('ch20-container-vessel')
+  const fleetCh = ch('c16-vessel')
   useFrame((s) => {
     const p = localProgress(scrollRef.current, fleetCh)
     if (ship.current) {
@@ -304,7 +304,7 @@ export function GlobeStage() {
   const g = useRef<THREE.Group>(null)
   useFrame((s) => {
     const p = scrollRef.current
-    const gp = localProgress(p, ch('ch21-globe-and-routes'))
+    const gp = localProgress(p, ch('c17-routes'))
     if (g.current) {
       // hold Visakhapatnam toward the camera: the routes have to be seen
       // leaving India, not the far side of the Atlantic

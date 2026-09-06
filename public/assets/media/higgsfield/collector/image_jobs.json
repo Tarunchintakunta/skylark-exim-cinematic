@@ -15,5 +15,41 @@
  "ch18-documents": "98968c82-4c03-4844-908c-83b7b213ec3e",
  "ch19-reefer": "11b040fe-0e82-4172-9659-11b4276b564d",
  "ch20-container-vessel": "a48e9102-5e7b-4d8f-bf7e-c4175f68be4d",
- "ch21-globe": "de76697d-fa5f-447b-ab44-579f1748af40"
+ "ch21-globe": "de76697d-fa5f-447b-ab44-579f1748af40",
+ "c04-nets": {
+  "still": "92a98142-aff6-44fc-a3cd-eb256e6a39bd",
+  "clip": "f4ac3cd3-4c73-4f36-a2c4-9af55d522a6e"
+ },
+ "c09-cutting": {
+  "still": "6f25006e-628e-4a14-bbb0-e60c136d869d",
+  "clip": "f0f82482-21ff-42bf-84bf-791ab891ce4f"
+ },
+ "c10-ponds": {
+  "still": "79c3797d-b232-475b-90f2-cf0196b5fc41",
+  "clip": "b8fc5d54-0468-4f09-9b83-029cedca2dca"
+ },
+ "c11-shrimp": {
+  "still": "4bb19ae3-d501-45be-b677-a5e588b68cfb",
+  "clip": "56c9b4f5-25fd-4732-bb38-0c33f1f7861b"
+ },
+ "clips_1080p": {
+  "c01-port": "ab300c0b-ed1f-4868-b92f-92a2f90eef15",
+  "c03-voyage": "905acce0-c4e9-4129-8db0-05004a823e08",
+  "c05-catch": "66131027-5f52-49a1-bcca-08a5d26bbd6e",
+  "c07-return": "4b0160bc-dc43-4bde-84e0-61ae98039272",
+  "c07-transfer": "6ad09a4a-9323-493d-87b6-a6e2c022c761",
+  "c13-freezing": "ee785252-5984-4fee-bce8-89625896264f",
+  "c15-reefer": "ef14d1d4-fd8c-46c9-88fe-86b8c7fb95da",
+  "c16-vessel": "685f22b8-6c5f-4e3f-b9e1-e2abd9420d42",
+  "c11-forms": "d6c90f29-e43a-4a00-aac0-3275372dc2ae",
+  "c02-boarding": "3edbfc5c-7cc0-4d5c-aa37-c64ccdae857c",
+  "c06-hold": "e9b240c3-3d50-4b73-926b-2a24c1ea9f33",
+  "c08-intake": "dd2a41d3-5568-4b5d-9fe1-ade75b2f21b4",
+  "c12-qc": "9339e026-6051-455f-b280-dea942805f9a",
+  "c14-coldstore": "660e735e-3a1f-4d15-af50-e569120f61b3",
+  "c04-nets": "f4ac3cd3-4c73-4f36-a2c4-9af55d522a6e",
+  "c09-cutting": "f0f82482-21ff-42bf-84bf-791ab891ce4f",
+  "c10-ponds": "b8fc5d54-0468-4f09-9b83-029cedca2dca",
+  "c11-shrimp": "56c9b4f5-25fd-4732-bb38-0c33f1f7861b"
+ }
 }

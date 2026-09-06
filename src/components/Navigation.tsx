@@ -4,13 +4,13 @@ import { chapters } from '@/timeline/chapters'
 import { scrollToProgress } from '@/timeline/useScrollTimeline'
 
 const NAV: { label: string; chapter: string }[] = [
-  { label: 'Origins', chapter: 'ch04-into-the-bay' },
-  { label: 'Catch', chapter: 'ch06-swordfish-and-tuna' },
-  { label: 'Process', chapter: 'ch10-processing-arrival' },
-  { label: 'Products', chapter: 'ch13-product-forms' },
-  { label: 'Quality', chapter: 'ch15-qc-and-residue-testing' },
-  { label: 'Cold Chain', chapter: 'ch17-packing-and-cold-storage' },
-  { label: 'Export', chapter: 'ch21-globe-and-routes' },
+  { label: 'Origins', chapter: 'c03-voyage' },
+  { label: 'Catch', chapter: 'c05-catch' },
+  { label: 'Process', chapter: 'c08-intake' },
+  { label: 'Products', chapter: 'c11-shrimp' },
+  { label: 'Quality', chapter: 'c12-qc' },
+  { label: 'Cold Chain', chapter: 'c14-coldstore' },
+  { label: 'Export', chapter: 'c17-routes' },
 ]
 
 const goto = (chapterId: string) => {
@@ -47,7 +47,7 @@ export function TopBar() {
           )
         })}
       </nav>
-      <button className="cta-quote" onClick={() => goto('ch22-rfq')}>
+      <button className="cta-quote" onClick={() => goto('c18-rfq')}>
         Request Export Quote
       </button>
     </header>
@@ -92,10 +92,11 @@ export function ClosingLine() {
   const [line, setLine] = useState('Visakhapatnam · Andhra Pradesh · India')
   useEffect(() => {
     setLine(
-      idx >= 20
-        ? 'From this shore to yours, every step protects a promise.'
-        : idx >= 14
-          ? 'Trust is not a claim. It is a result.'
+      // a location line, the way a film captions where it is: no slogans
+      idx >= 16
+        ? 'Europe · The Gulf · East Asia · North America'
+        : idx >= 7
+          ? 'Visakhapatnam · HACCP · EIC · Tested every batch'
           : 'Visakhapatnam · Andhra Pradesh · India',
     )
   }, [idx])

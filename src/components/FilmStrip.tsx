@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { scrollRef, useStore } from '@/store/useStore'
 import { chapters, clamp01 } from '@/timeline/chapters'
-import { cinematicPlates } from '@/data/cinematicPlates'
+import { film, stillFor } from '@/data/cinematicPlates'
 
 /**
  * The film, scrubbed frame by frame against the scroll.
@@ -13,8 +13,8 @@ import { cinematicPlates } from '@/data/cinematicPlates'
  * 2D canvas. One frame per scroll position, exactly, and one composited layer
  * for the whole film instead of one per chapter.
  *
- * Decoded frames are uncompressed: a 1440x810 bitmap is 4.7 MB, so a 40-frame
- * strip costs about 190 MB. Nothing may hold more than a few strips at once,
+ * Decoded frames are uncompressed: a 1920x1080 bitmap is 8.3 MB, so a 40-frame
+ * strip costs about 330 MB. Nothing may hold more than a few strips at once,
  * which is what the eviction window below is for.
  */
 
@@ -24,29 +24,21 @@ interface FrameManifest {
   mobile: { dir: string; w: number; h: number; clips: Record<string, number> }
 }
 
-/** chapter id -> clip id, for the handful whose slugs differ */
-const CLIP_ALIAS: Record<string, string> = {
-  'ch05-nets': 'ch05-crew-hauling',
-  'ch06-swordfish-and-tuna': 'ch06-catch',
-  'ch07-onboard-cold-storage': 'ch07-chilled-hold',
-  'ch09-cold-chain-transfer': 'ch09-transfer',
-  'ch10-processing-arrival': 'ch10-processing',
-  'ch12-pond-origin': 'ch12-ponds',
-  'ch15-qc-and-residue-testing': 'ch15-qc',
-  'ch16-freezing-and-glazing': 'ch16-freezing',
-  'ch17-packing-and-cold-storage': 'ch17-cold-storage',
-  'ch19-reefer-containers': 'ch19-reefer',
-  'ch21-globe-and-routes': 'ch21-globe',
-}
-const clipFor = (chapterId: string) => CLIP_ALIAS[chapterId] ?? chapterId
-
-/** chapters that have a strip, in order */
-const FILM = cinematicPlates.map((p) => ({
-  chapter: p.chapter,
-  clip: clipFor(p.chapter),
-  still: p.still,
-  index: chapters.findIndex((c) => c.id === p.chapter),
-}))
+/**
+ * Every strip in scroll order, with the slice of the timeline it owns. A
+ * chapter with two strips cuts from one to the next halfway through its band.
+ */
+const FILM = film.flatMap((f) => {
+  const c = chapters.find((x) => x.id === f.chapter)!
+  const n = f.clips.length
+  return f.clips.map((clip, i) => ({
+    clip: clip.id,
+    still: stillFor(clip.id),
+    index: c.index,
+    start: c.start + ((c.end - c.start) * i) / n,
+    end: c.start + ((c.end - c.start) * (i + 1)) / n,
+  }))
+})
 
 type Strip = { count: number; bmp: (ImageBitmap | null)[]; q: Uint8Array }
 
@@ -177,10 +169,10 @@ export function FilmStrip() {
     }
 
     function resize() {
-      // The frames are 1440 wide. Giving the canvas a retina backing store just
+      // The frames are 1920 wide. Giving the canvas a retina backing store just
       // upscales them into a buffer four times the area, which costs a large
       // draw and a large composite every frame and shows nothing extra.
-      const p = manifest ? profile() : { w: 1440 }
+      const p = manifest ? profile() : { w: 1920 }
       const dpr = Math.min(window.devicePixelRatio || 1, p.w / window.innerWidth, 1.5)
       cv!.width = Math.round(window.innerWidth * Math.max(1, dpr))
       cv!.height = Math.round(window.innerHeight * Math.max(1, dpr))
@@ -223,7 +215,7 @@ export function FilmStrip() {
       // The film ends with the container vessel; the globe has the last word.
       // Without this the canvas went on drawing the final strip over the top of
       // it, and the closing chapters showed a ship instead of the routes.
-      const lastFilm = chapters[FILM[FILM.length - 1].index]
+      const lastFilm = FILM[FILM.length - 1]
       const outFrom = lastFilm.end - (lastFilm.end - lastFilm.start) * 0.25
       const vis = 1 - clamp01((p - outFrom) / (lastFilm.end - outFrom))
       if (vis !== lastVis) {
@@ -235,12 +227,8 @@ export function FilmStrip() {
       if (vis < 0.01) return
 
       let cur = FILM[0]
-      for (const f of FILM) {
-        const c = chapters[f.index]
-        if (p >= c.start) cur = f
-      }
-      const c = chapters[cur.index]
-      const local = clamp01((p - c.start) / (c.end - c.start))
+      for (const f of FILM) if (p >= f.start) cur = f
+      const local = clamp01((p - cur.start) / (cur.end - cur.start))
       const s = strips[cur.clip]
       const count = s?.count ?? profile().clips[cur.clip] ?? 1
       // reduced motion holds the opening frame rather than animating
@@ -302,7 +290,6 @@ export function FilmStrip() {
     return () => {
       alive = false
       cancelAnimationFrame(raf)
-      window.removeEventListener('resize', resize)
       window.removeEventListener('resize', resize)
       Object.keys(strips).forEach(release)
     }

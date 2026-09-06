@@ -23,8 +23,8 @@ function Ocean({ quality }: { quality: string }) {
     // calm in the harbour, adventurous in the open bay, calm again on return.
     // Both ramps are chapter-relative: absolute page fractions made the return
     // leg far longer than the chapter, so she came home over a black sea.
-    const bay = clamp01(smoothstep(localProgress(p, ch('ch02-boarding')) * 1.7))
-    const home = 1 - clamp01(smoothstep(localProgress(p, ch('ch08-return-to-port')) * 1.15))
+    const bay = clamp01(smoothstep(localProgress(p, ch('c02-boarding')) * 1.7))
+    const home = 1 - clamp01(smoothstep(localProgress(p, ch('c07-return')) * 1.15))
     const swell = 0.22 + 0.95 * Math.min(bay, Math.max(0.28, home))
     mat.uniforms.uSwell.value = swell
     swellRef.current = swell
@@ -89,8 +89,8 @@ function PortBackdrop() {
   const ref = useRef<THREE.Group>(null)
   useFrame(() => {
     const p = scrollRef.current
-    const out = smoothstep((p - ch('ch03-compass').start) / 0.055)
-    const back = smoothstep((p - ch('ch08-return-to-port').start) / 0.05)
+    const out = smoothstep((p - ch('c03-voyage').start) / 0.055)
+    const back = smoothstep((p - ch('c07-return').start) / 0.05)
     const away = Math.max(0, out - back)
     if (ref.current) {
       ref.current.position.z = -away * 1500
@@ -278,8 +278,8 @@ function Wake({ heading }: { heading: React.MutableRefObject<number> }) {
   useFrame((state) => {
     const p = scrollRef.current
     const moving =
-      smoothstep((p - ch('ch03-compass').start) / 0.06) *
-      (1 - smoothstep((p - ch('ch08-return-to-port').end) / 0.04))
+      smoothstep((p - ch('c03-voyage').start) / 0.06) *
+      (1 - smoothstep((p - ch('c07-return').end) / 0.04))
     mat.uniforms.uTime.value = state.clock.elapsedTime
     // a slow inbound run does not throw the wake a working passage does
     mat.uniforms.uOpacity.value = 0.92 * moving * (0.42 + 0.58 * swellRef.current)
@@ -377,8 +377,8 @@ function Spray({
  * by scroll, so the reader hauls the net themselves.
  */
 function FishingAction() {
-  const netsCh = ch('ch05-nets')
-  const catchCh = ch('ch06-swordfish-and-tuna')
+  const netsCh = ch('c04-nets')
+  const catchCh = ch('c05-catch')
   return (
     <group>
       <ScrubbedModel
@@ -478,8 +478,8 @@ export function OceanStage({ quality }: { quality: string }) {
     const t = state.clock.elapsedTime
 
     // vessel heel and heave, stronger in open water
-    const openBay = smoothstep((p - ch('ch04-into-the-bay').start) / 0.08) *
-      (1 - smoothstep((p - ch('ch08-return-to-port').start) / 0.08))
+    const openBay = smoothstep((p - ch('c03-voyage').start) / 0.08) *
+      (1 - smoothstep((p - ch('c07-return').start) / 0.08))
     if (vessel.current) {
       const sea = 0.25 + openBay
       vessel.current.rotation.z = Math.sin(t * 0.55) * 0.030 * sea
@@ -487,8 +487,8 @@ export function OceanStage({ quality }: { quality: string }) {
       vessel.current.position.y = 0.35 + Math.sin(t * 0.5) * 0.42 * sea
       // the vessel holds frame while the harbour recedes and the sea runs past,
       // so every shot stays composed no matter how fast the reader scrolls
-      const out = smoothstep((p - ch('ch02-boarding').start) / 0.12)
-      const back = smoothstep((p - ch('ch08-return-to-port').start) / 0.12)
+      const out = smoothstep((p - ch('c02-boarding').start) / 0.12)
+      const back = smoothstep((p - ch('c07-return').start) / 0.12)
       vessel.current.position.x = 0
       vessel.current.position.z = 0
       vessel.current.rotation.y = -0.10 + out * 0.06 - back * 0.06
@@ -496,7 +496,7 @@ export function OceanStage({ quality }: { quality: string }) {
     }
 
     // nets appear only for the casting chapter
-    const nc = ch('ch05-nets')
+    const nc = ch('c04-nets')
     if (nets.current) {
       const a = clamp01(
         smoothstep((p - (nc.start - 0.008)) / 0.02) - smoothstep((p - (nc.end + 0.006)) / 0.02),
@@ -507,7 +507,7 @@ export function OceanStage({ quality }: { quality: string }) {
     }
 
     // catch reveal on deck
-    const cc = ch('ch06-swordfish-and-tuna')
+    const cc = ch('c05-catch')
     if (catchGrp.current) {
       const a = clamp01(
         smoothstep((p - (cc.start - 0.012)) / 0.02) - smoothstep((p - (cc.end + 0.008)) / 0.02),
@@ -518,8 +518,8 @@ export function OceanStage({ quality }: { quality: string }) {
     }
 
     // the working sequence covers casting through the catch on deck
-    const ac0 = ch('ch05-nets')
-    const ac1 = ch('ch06-swordfish-and-tuna')
+    const ac0 = ch('c04-nets')
+    const ac1 = ch('c05-catch')
     const working = clamp01(
       smoothstep((p - (ac0.start - 0.014)) / 0.02) - smoothstep((p - (ac1.end + 0.006)) / 0.02),
     )
@@ -535,7 +535,7 @@ export function OceanStage({ quality }: { quality: string }) {
     }
   })
 
-  const netsCh = ch('ch05-nets')
+  const netsCh = ch('c04-nets')
 
   return (
     <group>

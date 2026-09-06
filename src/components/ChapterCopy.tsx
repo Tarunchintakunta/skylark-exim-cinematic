@@ -106,7 +106,7 @@ function Block({ c }: { c: Chapter }) {
   useCopyAnim(ref, c)
   const Icon = c.icon
   // the RFQ chapter hands the frame to the form
-  const hidden = c.id === 'ch22-rfq'
+  const hidden = c.id === 'c18-rfq'
   if (hidden) return null
   return (
     <div className="chapter-copy" ref={ref} style={{ opacity: 0, visibility: 'hidden' }}>
@@ -122,6 +122,13 @@ function Block({ c }: { c: Chapter }) {
       {c.facts && (
         <div className="facts">
           {c.facts.map((f) => (
+            <span key={f}>{f}</span>
+          ))}
+        </div>
+      )}
+      {c.detail && (
+        <div className="facts detail">
+          {c.detail.map((f) => (
             <span key={f}>{f}</span>
           ))}
         </div>

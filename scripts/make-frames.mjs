@@ -15,8 +15,8 @@ const SRC = 'media-src/video'
 const OUT = 'public/assets/frames'
 const TMP = process.env.TMPDIR ?? '/tmp'
 
-const D = { dir: 'd', w: 1440, h: 810, avifCrf: 46 }
-const M = { dir: 'm', w: 960, h: 540, avifCrf: 48 }
+const D = { dir: 'd', w: 1920, h: 1080, avifCrf: 48 }
+const M = { dir: 'm', w: 1280, h: 720, avifCrf: 50 }
 // Every frame also gets a small WebP. It is the strip that loads first so
 // scrubbing works immediately, and it is the whole strip for a browser without
 // AVIF: soft, but it still moves frame by frame.

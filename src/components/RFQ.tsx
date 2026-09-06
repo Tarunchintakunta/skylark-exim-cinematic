@@ -80,7 +80,7 @@ export function RFQ() {
   const needsForms = products?.includes('Shrimp')
 
   useEffect(() => {
-    const c = chapters.find((x) => x.id === 'ch22-rfq')!
+    const c = chapters.find((x) => x.id === 'c18-rfq')!
     let raf = 0
     const tick = () => {
       const p = scrollRef.current
