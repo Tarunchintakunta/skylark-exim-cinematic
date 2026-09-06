@@ -283,8 +283,9 @@ export const assetManifest: AssetEntry[] = [
     status: 'integrated',
     animationNotes:
       'Fourteen Route_* arcs from Visakhapatnam. Each has a MarketAnchor_* empty for the DOM market label. Pivot_Globe_Spin drives rotation.',
-    scaleNotes: '5.0 m radius globe, routes lifted to 1.3 R at apex.',
-    optimizationNotes: '55.9k tris, 1.22 MB GLB, graticule drawn as thin swept curves.',
+    scaleNotes: '5.0 m radius globe, land shell at 1.02 R, routes lifted to 1.3 R at apex.',
+    optimizationNotes:
+      '53.1k tris, 1.60 MB GLB. Continents are flat-shaded shells built from coarse lat/lon coastlines in blender/scripts/land.py, ear clipped and refined to 13-degree spans so they hug the sphere.',
     fallbackPath: `${F}/ch21-globe.jpg`,
   },
   {

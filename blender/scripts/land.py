@@ -73,8 +73,8 @@ LANDMASSES = {
         (5, 113),
     ],
     "NewGuinea": [
-        (-1, 131), (-3, 137), (-6, 141), (-9, 147), (-10, 150), (-8, 146),
-        (-5, 140), (-2, 134),
+        (-1, 131), (-2, 137), (-3, 142), (-6, 147), (-9, 150), (-10, 148),
+        (-9, 144), (-8, 140), (-6, 136), (-4, 132),
     ],
     "Madagascar": [
         (-12, 49), (-16, 50), (-21, 48), (-25, 47), (-25, 44), (-19, 44),
@@ -227,8 +227,10 @@ def land_mesh(name, ring, radius, material, parent, thickness=0.0, max_span=13.0
     me.from_pydata(pts, [], faces)
     me.validate()
     me.update()
+    # flat shading: these are thin plates, and interpolated normals across the
+    # shell make them read as inflated pillows rather than land
     for poly in me.polygons:
-        poly.use_smooth = True
+        poly.use_smooth = False
     if material is not None:
         me.materials.append(material)
     o = bpy.data.objects.new(name, me)

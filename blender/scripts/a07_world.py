@@ -66,9 +66,9 @@ def build_globe():
     root = empty("GlobeRoutes", (0, 0, 0))
     sphere("GlobeBody", R, (0, 0, 0), p['globe'], root, 64, 40)
     # continents, so the sphere reads as Earth and India reads as the origin
-    land_mat = mat("GlobeLand", (0.74, 0.73, 0.66), 0.0, 0.62)
+    land_mat = mat("GlobeLand", (0.68, 0.63, 0.50), 0.0, 0.85)
     for nm, ring in land.LANDMASSES.items():
-        land.land_mesh(f"Land_{nm}", ring, R * 1.014, land_mat, root, thickness=0.05)
+        land.land_mesh(f"Land_{nm}", ring, R * 1.020, land_mat, root)
     # graticule
     for i in range(12):
         lon = i*30
@@ -79,7 +79,7 @@ def build_globe():
         curve_tube(f"Parallel{lat}", pts, 0.009, p['globe_line'], parent=root, res=3, bevel_res=2)
     # India origin marker
     org = _latlon(VIZAG[0], VIZAG[1], R*1.01)
-    sphere("OriginIndia", 0.20, org, p['india'], root, 14, 10)
+    sphere("OriginIndia", 0.20, org, p['india'], root, 12, 9)
     cyl("OriginPin", 0.02, 0.9, [c*1.09 for c in org], p['india'], root, segs=8,
         rot=(0,0,0))
     bpy.data.objects["OriginPin"].rotation_euler = mathutils_track(org)
@@ -97,8 +97,8 @@ def build_globe():
             if v.length < 1e-4: v = mathutils.Vector((0,0,1))
             lift = 1.0 + 0.30 * math.sin(math.pi * t)
             pts.append(tuple(v.normalized() * R * lift))
-        arc = curve_tube(f"Route_{i}", pts, 0.042, p['route'], parent=root, res=4, bevel_res=3)
-        sphere(f"Market_{i}", 0.115, tuple(vb.normalized()*R*1.01), p['route'], root, 12, 8)
+        arc = curve_tube(f"Route_{i}", pts, 0.042, p['route'], parent=root, res=3, bevel_res=2)
+        sphere(f"Market_{i}", 0.115, tuple(vb.normalized()*R*1.02), p['route'], root, 10, 7)
         empty(f"MarketAnchor_{i}", tuple(vb.normalized()*R*1.16), parent=root, size=0.1)
     empty("Pivot_Globe_Spin", (0, 0, 0), parent=root, size=1.0)
     return root

@@ -117,7 +117,7 @@ def P():
         soil=mat("Soil", (0.50, 0.42, 0.30), 0.0, 0.95),
         pond=mat("PondWater", (0.25, 0.50, 0.42), 0.0, 0.1, alpha=0.85),
         grass=mat("Grass", (0.40, 0.52, 0.28), 0.0, 0.9),
-        globe=mat("Globe", (0.06, 0.20, 0.32), 0.0, 0.35),
+        globe=mat("Globe", (0.07, 0.23, 0.36), 0.0, 0.72),
         globe_line=mat("GlobeLine", (0.55, 0.80, 0.90), 0.0, 0.5, emission=(0.55, 0.85, 1.0), estr=1.0),
         route=mat("Route", (0.95, 0.75, 0.30), 0.2, 0.4, emission=(1.0, 0.80, 0.35), estr=2.0),
         india=mat("India", (0.95, 0.55, 0.20), 0.0, 0.4, emission=(1.0, 0.55, 0.2), estr=3.0),
