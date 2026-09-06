@@ -137,11 +137,17 @@ export default function App() {
               typeof window !== 'undefined' && window.location.search.includes('qa=1'),
           }}
           camera={{ fov: 46, near: 0.1, far: 6000, position: [-46, 2.6, 34] }}
-          onCreated={({ gl, scene }) => {
+          onCreated={(state) => {
+            const { gl, scene } = state
             gl.toneMapping = THREE.ACESFilmicToneMapping
             gl.toneMappingExposure = 0.98
             gl.outputColorSpace = THREE.SRGBColorSpace
             scene.fog = null
+            // under ?qa=1 the harness can raycast the live scene, which is how
+            // stray geometry gets identified instead of guessed at
+            if (typeof window !== 'undefined' && window.location.search.includes('qa=1')) {
+              ;(window as unknown as { __SKYLARK_R3F__?: unknown }).__SKYLARK_R3F__ = state
+            }
           }}
         >
           <color attach="background" args={['#bfe0ec']} />

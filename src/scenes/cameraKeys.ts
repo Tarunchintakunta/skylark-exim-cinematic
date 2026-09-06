@@ -38,9 +38,14 @@ export const camKeys: CamKey[] = [
   { p: at('ch05-nets', 0.02), stage: 'ocean', pos: [-9.0, 9.2, 16.0], target: [2.4, 3.6, 0.8], fov: 44 },
   { p: at('ch05-nets', 1), stage: 'ocean', pos: [11.5, 7.2, 12.0], target: [2.6, 3.4, 1.8], fov: 46 },
   // 06 catch — close on the fish, then wide on deck
+  // the hero product beat. The old path ran the camera through the starboard
+  // winch, which filled half the frame with an out-of-focus net drum. The bin
+  // sits in a narrow gap between the deckhouse and the winches, so the shot
+  // comes down on it from above, steep enough to leave the gear out of frame.
   { p: at('ch06-swordfish-and-tuna', 0.02), stage: 'ocean', pos: [9.6, 6.6, 10.6], target: [2.6, 3.7, 2.2], fov: 44 },
-  { p: at('ch06-swordfish-and-tuna', 0.24), stage: 'ocean', pos: [7.4, 5.8, 7.4], target: [0.6, 3.1, 0.6], fov: 46 },
-  { p: at('ch06-swordfish-and-tuna', 0.42), stage: 'ocean', pos: [-2.05, 4.95, 3.15], target: [-4.85, 2.95, -1.15], fov: 40 },
+  { p: at('ch06-swordfish-and-tuna', 0.28), stage: 'ocean', pos: [-1.2, 10.6, 4.6], target: [-4.6, 3.9, -0.8], fov: 38 },
+  { p: at('ch06-swordfish-and-tuna', 0.55), stage: 'ocean', pos: [-4.4, 9.6, 2.6], target: [-5.0, 3.85, -1.0], fov: 36 },
+  { p: at('ch06-swordfish-and-tuna', 0.78), stage: 'ocean', pos: [-6.6, 7.2, 3.4], target: [-5.1, 3.85, -1.1], fov: 34 },
   { p: at('ch06-swordfish-and-tuna', 1), stage: 'ocean', pos: [-15, 9.4, 16], target: [0.0, 3.4, -0.4], fov: 44 },
   // 07 chilled hold — interior
   { p: at('ch07-onboard-cold-storage', 0.02), stage: 'hold', pos: [-2.35, 2.15, 1.95], target: [1.4, 1.05, -0.5], fov: 58 },
