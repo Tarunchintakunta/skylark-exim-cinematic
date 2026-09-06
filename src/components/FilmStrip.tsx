@@ -63,11 +63,13 @@ const probeAvif = () =>
 
 export function FilmStrip() {
   const canvas = useRef<HTMLCanvasElement>(null)
+  const gradeRef = useRef<HTMLDivElement>(null)
   const reduced = useStore((s) => s.reducedMotion)
 
   useEffect(() => {
     const cv = canvas.current
-    if (!cv) return
+    const grade = gradeRef.current
+    if (!cv || !grade) return
     const ctx = cv.getContext('2d', { alpha: false })
     if (!ctx) return
 
@@ -79,6 +81,7 @@ export function FilmStrip() {
     const queue: { clip: string; i: number; url: string; q: number }[] = []
     let inflight = 0
     const state = { clip: '', frame: 0, dirty: true }
+    let lastVis = -1
     const posters: Record<string, HTMLImageElement> = {}
 
     const profile = () => (isMobile ? manifest!.mobile : manifest!.desktop)
@@ -216,6 +219,21 @@ export function FilmStrip() {
       raf = requestAnimationFrame(tick)
       if (!manifest) return
       const p = scrollRef.current
+
+      // The film ends with the container vessel; the globe has the last word.
+      // Without this the canvas went on drawing the final strip over the top of
+      // it, and the closing chapters showed a ship instead of the routes.
+      const lastFilm = chapters[FILM[FILM.length - 1].index]
+      const outFrom = lastFilm.end - (lastFilm.end - lastFilm.start) * 0.25
+      const vis = 1 - clamp01((p - outFrom) / (lastFilm.end - outFrom))
+      if (vis !== lastVis) {
+        lastVis = vis
+        cv!.style.opacity = String(vis)
+        cv!.style.visibility = vis < 0.01 ? 'hidden' : 'visible'
+        grade!.style.opacity = String(vis)
+      }
+      if (vis < 0.01) return
+
       let cur = FILM[0]
       for (const f of FILM) {
         const c = chapters[f.index]
@@ -293,7 +311,7 @@ export function FilmStrip() {
   return (
     <div className="film-layer" aria-hidden="true">
       <canvas ref={canvas} className="film-canvas" />
-      <div className="plate-grade" />
+      <div className="plate-grade" ref={gradeRef} />
     </div>
   )
 }
