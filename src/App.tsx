@@ -168,7 +168,8 @@ export default function App() {
         >
           <color attach="background" args={['#04141c']} />
           <CameraDirector onCut={onCut} />
-          <SceneEnvironment intensity={0.34} />
+          {/* only the globe is lit by this now, and it sits on a dark ground */}
+          <SceneEnvironment intensity={0.17} />
           <Suspense fallback={null}>
             {mounted.ocean && (
               <Stage id="ocean" visible={visible('ocean')}>

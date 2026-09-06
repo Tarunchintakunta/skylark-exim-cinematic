@@ -25,11 +25,11 @@ export function CinematicPlates() {
 /** How far the plate travels across its chapter, in percent of the frame. */
 const MOVES: Record<PlateMove, (t: number) => string> = {
   // t runs 0 to 1 across the chapter
-  in: (t) => `scale(${1.16 - t * 0.14})`,
-  out: (t) => `scale(${1.02 + t * 0.14})`,
-  left: (t) => `scale(1.14) translate3d(${(0.5 - t) * 4.5}%, 0, 0)`,
-  right: (t) => `scale(1.14) translate3d(${(t - 0.5) * 4.5}%, 0, 0)`,
-  up: (t) => `scale(${1.14 - t * 0.06}) translate3d(0, ${(0.5 - t) * 4.0}%, 0)`,
+  in: (t) => `scale(${1.09 - t * 0.08})`,
+  out: (t) => `scale(${1.01 + t * 0.08})`,
+  left: (t) => `scale(1.10) translate3d(${(0.5 - t) * 3.4}%, 0, 0)`,
+  right: (t) => `scale(1.10) translate3d(${(t - 0.5) * 3.4}%, 0, 0)`,
+  up: (t) => `scale(${1.10 - t * 0.05}) translate3d(0, ${(0.5 - t) * 3.0}%, 0)`,
 }
 
 function Plate({ plate, next }: { plate: CinematicPlate; next?: CinematicPlate }) {
@@ -138,10 +138,18 @@ function Plate({ plate, next }: { plate: CinematicPlate; next?: CinematicPlate }
           playsInline
           preload="none"
           aria-label={plate.alt}
+          style={plate.focus ? { objectPosition: plate.focus } : undefined}
           onError={() => setVideoOk(false)}
         />
       ) : (
-        <img className="plate-media" src={plate.still} alt={plate.alt} loading="lazy" decoding="async" />
+        <img
+          className="plate-media"
+          src={plate.still}
+          alt={plate.alt}
+          loading="lazy"
+          decoding="async"
+          style={plate.focus ? { objectPosition: plate.focus } : undefined}
+        />
       )}
       <div className="plate-grade" />
     </div>

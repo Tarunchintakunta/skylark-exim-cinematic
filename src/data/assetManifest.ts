@@ -1,6 +1,13 @@
 /**
  * Skylark Exim — production asset manifest.
  * Generated and maintained by the automated Blender/Higgsfield pipeline.
+ *
+ * A note on status. The site's visual language is the Higgsfield film: a plate
+ * holds each of chapters 1 to 20. The Blender models below were all generated,
+ * exported and verified, and they still drive the collector plates that seed
+ * every Higgsfield frame, but only the globe is mounted in the running site.
+ * They are therefore marked `verified` rather than `integrated`, which is what
+ * they are. Widen LIVE_STAGES in src/App.tsx to bring one back.
  */
 export type AssetStatus =
   | 'planned'
@@ -39,7 +46,7 @@ export const assetManifest: AssetEntry[] = [
     sourceTool: 'blender-mcp',
     filePath: `${M}/vessels/large_fishing_vessel.glb`,
     scene: 'ch01-opening-port, ch02-boarding, ch04-into-the-bay, ch05-nets, ch08-return-to-port',
-    status: 'integrated',
+    status: 'verified',
     animationNotes:
       'HatchLidPivot keyframed open/close 1-120. Pivot_Roll drives scroll-linked heel. Pivot_Wake anchors foam. WinchP/WinchS rotate for net haul.',
     scaleNotes: '34.0 m LOA, 8.6 m beam, metres, +X = bow, origin at waterline midships.',
@@ -53,7 +60,7 @@ export const assetManifest: AssetEntry[] = [
     sourceTool: 'blender-mcp',
     filePath: `${M}/vessels/container_vessel_export.glb`,
     scene: 'ch01-opening-port (background), ch20-container-vessel',
-    status: 'integrated',
+    status: 'verified',
     animationNotes: '14 CV_Bay* groups are separate empties for staggered scroll-linked container settle.',
     scaleNotes: '240 m LOA, 34 m beam, metres, +X = bow.',
     optimizationNotes: '18.4k tris, 487 KB GLB, container bays built as instanced boxes.',
@@ -66,7 +73,7 @@ export const assetManifest: AssetEntry[] = [
     sourceTool: 'blender-mcp',
     filePath: `${M}/vessels/fishing_crew_set.glb`,
     scene: 'ch02-boarding, ch05-nets, ch09-cold-chain-transfer',
-    status: 'integrated',
+    status: 'verified',
     animationNotes:
       'Six poses: boarding, rope, net-cast, carry, stand, inspect. Every joint is a named empty (Hips/LArm/LElbow/LLeg/LKnee) for procedural sway.',
     scaleNotes: '1.72 m standing height, Z up, feet at z=0.',
@@ -80,7 +87,7 @@ export const assetManifest: AssetEntry[] = [
     sourceTool: 'blender-mcp',
     filePath: `${M}/ocean/fishing_nets_and_ropes.glb`,
     scene: 'ch05-nets',
-    status: 'integrated',
+    status: 'verified',
     animationNotes:
       'Net_Cast scales 0.15 to 1.0 across frames 1-55 for the cast. Net_Trawl reads from underwater cameras. Float line and rope coils are static dress.',
     scaleNotes: '7 m cast diameter, 8 m trawl cone length, metres.',
@@ -94,7 +101,7 @@ export const assetManifest: AssetEntry[] = [
     sourceTool: 'blender-mcp',
     filePath: `${M}/products/swordfish_hero.glb`,
     scene: 'ch06-swordfish-and-tuna, ch07-onboard-cold-storage, ch11-cutting',
-    status: 'integrated',
+    status: 'verified',
     animationNotes:
       'Two named nodes. Swordfish_Display yaws gently for the product turntable; ' +
       'Swordfish_OnDeck is rolled onto its flank for the deck-and-ice pose. The site ' +
@@ -112,7 +119,7 @@ export const assetManifest: AssetEntry[] = [
     sourceTool: 'blender-mcp',
     filePath: `${M}/products/tuna_hero.glb`,
     scene: 'ch06-swordfish-and-tuna, ch07-onboard-cold-storage, ch11-cutting',
-    status: 'integrated',
+    status: 'verified',
     animationNotes:
       'Two named nodes, Tuna_Display and Tuna_OnDeck, selected with ModelPart. ' +
       'Sixteen small yellow finlets are separate meshes.',
@@ -128,7 +135,7 @@ export const assetManifest: AssetEntry[] = [
     sourceTool: 'blender-mcp',
     filePath: `${M}/products/supporting_ocean_fish.glb`,
     scene: 'ch06-swordfish-and-tuna, ch14-grading',
-    status: 'integrated',
+    status: 'verified',
     animationNotes:
       'Six species along +Y for a catalogue sweep. Static and deliberately simpler than ' +
       'the hero fish so swordfish and tuna stay the heroes.',
@@ -145,7 +152,7 @@ export const assetManifest: AssetEntry[] = [
     sourceTool: 'blender-mcp',
     filePath: `${M}/products/shrimp_product_forms.glb`,
     scene: 'ch13-product-forms, ch16-freezing-and-glazing',
-    status: 'integrated',
+    status: 'verified',
     animationNotes: 'Form_HOSO / Form_HLSO / Form_PUD / Form_PTO are separate groups for cross-fade between forms.',
     scaleNotes: 'Consistent 21/25 count scale across all four forms, metres.',
     optimizationNotes: '15.3k tris, 575 KB GLB, shared segment geometry per form.',
@@ -158,7 +165,7 @@ export const assetManifest: AssetEntry[] = [
     sourceTool: 'blender-mcp',
     filePath: `${M}/ocean/onboard_chilled_storage.glb`,
     scene: 'ch07-onboard-cold-storage',
-    status: 'integrated',
+    status: 'verified',
     animationNotes: 'Hold_HatchPivot opens frames 1-45. Temperature panel reads -1.0 C and LOT BOB-1142.',
     scaleNotes: '6.0 x 5.0 x 3.0 m hold, metres, floor at z=0.',
     optimizationNotes: '12.1k tris, 474 KB GLB, includes the rebuilt tuna and swordfish stowed in ice.',
@@ -171,7 +178,7 @@ export const assetManifest: AssetEntry[] = [
     sourceTool: 'blender-mcp',
     filePath: `${M}/export/port_transfer_system.glb`,
     scene: 'ch09-cold-chain-transfer',
-    status: 'integrated',
+    status: 'verified',
     animationNotes:
       'TransferHero translates -12 m to +16 m along the quay across frames 1-120. FL_ForksPivot lifts frames 1-40.',
     scaleNotes: '40 m quay section, metres, quay deck at z=0.',
@@ -185,7 +192,7 @@ export const assetManifest: AssetEntry[] = [
     sourceTool: 'blender-mcp',
     filePath: `${M}/processing/processing_facility.glb`,
     scene: 'ch10-processing-arrival, ch11-cutting, ch14-grading',
-    status: 'integrated',
+    status: 'verified',
     animationNotes:
       'PlantDoorPivot rolls up frames 1-50. Grading conveyor chutes carry 10/20 to 41/50 grade labels as separate meshes.',
     scaleNotes: '26 x 16 x 5.2 m hall, metres, floor at z=0.',
@@ -199,7 +206,7 @@ export const assetManifest: AssetEntry[] = [
     sourceTool: 'blender-mcp',
     filePath: `${M}/ponds/andhra_pond_grid.glb`,
     scene: 'ch12-pond-origin',
-    status: 'integrated',
+    status: 'verified',
     animationNotes: 'Twelve Aerator groups spin two full turns across frames 1-120. Batch tags and log book are static props.',
     scaleNotes: '200 x 160 m pond block, 34 x 22 m ponds, metres.',
     optimizationNotes: '8.3k tris, 467 KB GLB.',
@@ -212,7 +219,7 @@ export const assetManifest: AssetEntry[] = [
     sourceTool: 'blender-mcp',
     filePath: `${M}/qc/qc_lab_station.glb`,
     scene: 'ch15-qc-and-residue-testing',
-    status: 'integrated',
+    status: 'verified',
     animationNotes: 'ClearanceStampPivot presses down frames 1-55. Analyser screen reads PASS. Vial rack holds eight samples.',
     scaleNotes: '11 x 8 x 3.4 m lab, metres, floor at z=0.',
     optimizationNotes: '5.2k tris, 254 KB GLB.',
@@ -225,7 +232,7 @@ export const assetManifest: AssetEntry[] = [
     sourceTool: 'blender-mcp',
     filePath: `${M}/cold-chain/freezing_glazing_system.glb`,
     scene: 'ch16-freezing-and-glazing',
-    status: 'integrated',
+    status: 'verified',
     animationNotes:
       'IQFProduct belt translates across frames 1-120. Ten Anchor_Frost and six Anchor_Glaze empties position particle emitters. Blast cabinet doors read -40 C, -35 C, -18 C.',
     scaleNotes: '22 x 12 x 5 m room, 16 m IQF tunnel, metres.',
@@ -239,7 +246,7 @@ export const assetManifest: AssetEntry[] = [
     sourceTool: 'blender-mcp',
     filePath: `${M}/cold-chain/cold_storage_700_pallets.glb`,
     scene: 'ch17-packing-and-cold-storage',
-    status: 'integrated',
+    status: 'verified',
     animationNotes: 'CS_Door1Pivot / CS_Door-1Pivot swing open frames 1-40. Display reads -20 C and 700 PALLETS.',
     scaleNotes: '40 x 26 x 9 m chamber, six racking rows, four levels, metres.',
     optimizationNotes: '22.3k tris, 1.66 MB GLB, pallets share one mesh datablock per level.',
@@ -252,7 +259,7 @@ export const assetManifest: AssetEntry[] = [
     sourceTool: 'blender-mcp',
     filePath: `${M}/export/export_documents.glb`,
     scene: 'ch18-export-documents',
-    status: 'integrated',
+    status: 'verified',
     animationNotes:
       'Seven Doc_* cards fan into a stack on staggered keys frames 40-82. Titles are extruded text so they stay legible without textures.',
     scaleNotes: '2.1 x 1.5 m cards on a 3.4 m desk, metres.',
@@ -266,7 +273,7 @@ export const assetManifest: AssetEntry[] = [
     sourceTool: 'blender-mcp',
     filePath: `${M}/containers/reefer_container.glb`,
     scene: 'ch19-reefer-containers, ch22-rfq',
-    status: 'integrated',
+    status: 'verified',
     animationNotes:
       'Reefer_DoorLPivot / Reefer_DoorRPivot close frames 1-60, Reefer_SealBarPivot drops frames 70-100. Reefer unit display reads -20 C.',
     scaleNotes: '40 ft ISO reefer, 12.03 x 2.44 x 2.59 m, metres.',
@@ -285,7 +292,7 @@ export const assetManifest: AssetEntry[] = [
       'Fourteen Route_* arcs from Visakhapatnam. Each has a MarketAnchor_* empty for the DOM market label. Pivot_Globe_Spin drives rotation.',
     scaleNotes: '5.0 m radius globe, land shell at 1.02 R, routes lifted to 1.3 R at apex.',
     optimizationNotes:
-      '53.1k tris, 1.60 MB GLB. Continents are flat-shaded shells built from coarse lat/lon coastlines in blender/scripts/land.py, ear clipped and refined to 13-degree spans so they hug the sphere.',
+      '61k tris, 1.31 MB GLB. Continents are smooth-shaded shells built from coarse lat/lon coastlines in blender/scripts/land.py, ear clipped and refined to 9-degree spans so they hug the sphere. This is the only district the site still builds: the film carries chapters 1 to 20, so the other stages are retained as source but no longer mounted.',
     fallbackPath: `${F}/ch21-globe.jpg`,
   },
   {
@@ -295,7 +302,7 @@ export const assetManifest: AssetEntry[] = [
     sourceTool: 'procedural-webgl',
     filePath: 'src/shaders/ocean.ts',
     scene: 'ch01 to ch09, ch20, ch21',
-    status: 'integrated',
+    status: 'verified',
     animationNotes:
       'Four-band Gerstner sum with scroll-driven swell amplitude, sun glint and depth-graded blue-green colour ramp.',
     scaleNotes: '2000 x 2000 m plane, 256 segment grid, metres.',
@@ -335,17 +342,18 @@ export const assetManifest: AssetEntry[] = [
     type: 'video',
     sourceTool: 'higgsfield',
     filePath: '/assets/media/higgsfield/',
-    scene: 'all chapters (atmospheric plates)',
-    status: 'blocked',
+    scene: 'chapters 1 to 20 (the base image of the site)',
+    status: 'integrated',
     animationNotes:
-      'BLOCKED. The Blender collector package is complete and waiting at ' +
-      'public/assets/media/higgsfield/collector/collector_manifest.json: sixteen chapter plates, ' +
-      'twenty-four turntable frames, per-chapter prompts, a shared negative prompt and the exact ' +
-      'camera for every shot. The Higgsfield MCP connection resolves to one private workspace on ' +
-      'the free plan with zero credits, so every generation returns "Out of credits in the ' +
-      'selected workspace". See scripts/higgsfield-submit.md for the run steps.',
-    scaleNotes: '16:9 plates, 1080p, matched to each chapter camera.',
-    optimizationNotes: 'Would ship as H.264 + WebM loops under 2 MB each.',
+      'Twenty-two stills and nineteen five-second clips, one plate per chapter from 1 to 20. ' +
+      'Each was seeded from the Blender collector frame for its chapter so the framing matches ' +
+      'the camera the scene was blocked for; see collector/collector_manifest.json for the ' +
+      'prompts, the shared negative prompt and the exact camera per shot. Chapters 1 to 8 are ' +
+      'additionally anchored to one hero vessel reference so the same ship sails the whole ' +
+      'ocean act. A plate holds its entire chapter, carries a slow camera move and gives way ' +
+      'only once the next has covered it; clips run faster the faster the visitor scrolls.',
+    scaleNotes: '16:9, stills 1920 wide, clips 1280 wide H.264 with faststart, silent.',
+    optimizationNotes: '6.9 MB of stills and 23 MB of clips. Only the plates on screen decode.',
     fallbackPath: `${F}/`,
   },
 ]

@@ -1,28 +1,45 @@
 import { useEffect, useState } from 'react'
 import { useProgress } from '@react-three/drei'
 import { useStore } from '@/store/useStore'
+import { cinematicPlates } from '@/data/cinematicPlates'
 
 export function Loader() {
-  const { progress, active } = useProgress()
+  const { progress: glProgress, active } = useProgress()
+  const [imgReady, setImgReady] = useState(false)
   const [done, setDone] = useState(false)
   const setReady = useStore((s) => s.setReady)
 
+  // What the visitor is actually waiting for is the first frame of the film.
+  // Waiting on WebGL progress left the loader pinned at nought per cent, because
+  // the opening chapters no longer load any geometry at all.
   useEffect(() => {
-    if (!active && progress >= 100) {
+    const first = cinematicPlates[0]
+    if (!first) return setImgReady(true)
+    const img = new Image()
+    img.onload = () => setImgReady(true)
+    img.onerror = () => setImgReady(true)
+    img.src = first.still
+    if (img.complete) setImgReady(true)
+  }, [])
+
+  const progress = imgReady ? 100 : Math.min(92, 16 + glProgress * 0.8)
+
+  useEffect(() => {
+    if (imgReady && !active) {
       const t = setTimeout(() => {
         setDone(true)
         setReady(true)
-      }, 480)
+      }, 420)
       return () => clearTimeout(t)
     }
-  }, [active, progress, setReady])
+  }, [imgReady, active, setReady])
 
   // never trap the reader behind a stalled asset
   useEffect(() => {
     const t = setTimeout(() => {
       setDone(true)
       setReady(true)
-    }, 14000)
+    }, 8000)
     return () => clearTimeout(t)
   }, [setReady])
 
@@ -55,7 +72,8 @@ export function NoWebGL() {
       {[
         ['01 · Visakhapatnam port, 10:00 AM', 'ch01-opening-port'],
         ['02 · The crew boards the vessel', 'ch02-boarding'],
-        ['05 · Nets into the Bay of Bengal', 'ch05-nets'],
+        ['04 · Into the Bay of Bengal', 'ch04-into-the-bay'],
+        ['05 · Nets into the Bay of Bengal', 'ch05-crew-hauling'],
         ['06 · Swordfish and tuna, the hero catch', 'ch06-catch'],
         ['07 · Onboard chilled storage, −1 °C', 'ch07-chilled-hold'],
         ['09 · Cold-chain transfer at the quay', 'ch09-transfer'],
@@ -72,7 +90,7 @@ export function NoWebGL() {
       ].map(([label, file]) => (
         <div key={file}>
           <h3>{label}</h3>
-          <img className="shot" src={`/assets/media/fallbacks/${file}.jpg`} alt={label} />
+          <img className="shot" src={`/assets/media/higgsfield/stills/${file}.jpg`} alt={label} />
         </div>
       ))}
       <p style={{ marginTop: 40 }}>

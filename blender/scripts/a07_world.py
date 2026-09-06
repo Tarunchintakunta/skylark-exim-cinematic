@@ -66,7 +66,7 @@ def build_globe():
     root = empty("GlobeRoutes", (0, 0, 0))
     sphere("GlobeBody", R, (0, 0, 0), p['globe'], root, 64, 40)
     # continents, so the sphere reads as Earth and India reads as the origin
-    land_mat = mat("GlobeLand", (0.30, 0.285, 0.235), 0.0, 0.92)
+    land_mat = mat("GlobeLand", (0.35, 0.325, 0.265), 0.0, 0.92)
     for nm, ring in land.LANDMASSES.items():
         land.land_mesh(f"Land_{nm}", ring, R * 1.008, land_mat, root)
     # graticule

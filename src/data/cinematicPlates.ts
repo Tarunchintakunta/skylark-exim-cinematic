@@ -23,6 +23,8 @@ export interface CinematicPlate {
   video?: string
   /** the slow camera move held across the chapter */
   move: PlateMove
+  /** object-position, to bias the crop away from something that must stay in */
+  focus?: string
   /** fade out at the end, for a plate the next chapter does not cover */
   release?: boolean
   /** short caption for accessibility */
@@ -73,6 +75,8 @@ export const cinematicPlates: CinematicPlate[] = [
     still: `${S}/ch06-catch.jpg`,
     video: `${V}/ch06-catch.mp4`,
     move: 'in',
+    // bias the crop left so the swordfish bill never leaves the frame
+    focus: '36% 50%',
     alt: 'Swordfish and tuna resting on crushed ice in a clean deck bin',
   },
   {
