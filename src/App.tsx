@@ -16,8 +16,7 @@ import {
 import { CompassHUD } from '@/components/CompassHUD'
 import { ChapterCopy } from '@/components/ChapterCopy'
 import { TopBar, ChapterRail, ProgressBar, ClosingLine } from '@/components/Navigation'
-import { CinematicPlates } from '@/components/CinematicPlates'
-import { FilmFx } from '@/components/FilmFx'
+import { FilmStrip } from '@/components/FilmStrip'
 import { RFQ } from '@/components/RFQ'
 import { Loader, NoWebGL } from '@/components/Loader'
 
@@ -123,8 +122,9 @@ export default function App() {
     window.setTimeout(() => el.classList.remove('on'), 130)
   }, [])
 
+  // one sphere on a dark ground does not need a full retina buffer
   const dpr = useMemo<[number, number]>(
-    () => (quality === 'low' ? [1, 1.35] : quality === 'medium' ? [1, 1.75] : [1, 2]),
+    () => (quality === 'low' ? [1, 1.25] : quality === 'medium' ? [1, 1.5] : [1, 1.75]),
     [quality],
   )
 
@@ -140,9 +140,17 @@ export default function App() {
 
   return (
     <>
+      {/* The WebGL context only exists while the globe needs it. Left mounted,
+          a full-viewport canvas is another large layer for the compositor to
+          carry down the whole page for nothing. */}
+      {mounted.globe && (
       <div className="canvas-layer">
         <Canvas
           dpr={dpr}
+          /* Only the globe district builds, so outside it there is nothing to
+             draw. On demand means React Three Fiber renders when something asks
+             it to instead of every frame behind an opaque plate. */
+          frameloop={mounted.globe ? 'always' : 'demand'}
           gl={{
             antialias: quality !== 'low',
             powerPreference: 'high-performance',
@@ -236,9 +244,9 @@ export default function App() {
           <AdaptiveDpr pixelated={false} />
         </Canvas>
       </div>
+      )}
 
-      <CinematicPlates />
-      <FilmFx />
+      <FilmStrip />
 
       <div className="veil" ref={veil} />
 

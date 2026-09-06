@@ -1,0 +1,55 @@
+{
+ "proxyEvery": 1,
+ "desktop": {
+  "dir": "/assets/frames/d",
+  "w": 1440,
+  "h": 810,
+  "clips": {
+   "ch01-opening-port": 52,
+   "ch02-boarding": 40,
+   "ch03-compass": 44,
+   "ch04-into-the-bay": 64,
+   "ch05-crew-hauling": 60,
+   "ch06-catch": 52,
+   "ch07-chilled-hold": 44,
+   "ch08-return-to-port": 40,
+   "ch09-transfer": 40,
+   "ch10-processing": 40,
+   "ch11-cutting": 40,
+   "ch12-ponds": 48,
+   "ch14-grading": 44,
+   "ch15-qc": 60,
+   "ch16-freezing": 52,
+   "ch17-cold-storage": 48,
+   "ch19-reefer": 44,
+   "ch20-container-vessel": 44,
+   "ch21-globe": 52
+  }
+ },
+ "mobile": {
+  "dir": "/assets/frames/m",
+  "w": 960,
+  "h": 540,
+  "clips": {
+   "ch01-opening-port": 39,
+   "ch02-boarding": 30,
+   "ch03-compass": 33,
+   "ch04-into-the-bay": 48,
+   "ch05-crew-hauling": 45,
+   "ch06-catch": 39,
+   "ch07-chilled-hold": 33,
+   "ch08-return-to-port": 30,
+   "ch09-transfer": 30,
+   "ch10-processing": 30,
+   "ch11-cutting": 30,
+   "ch12-ponds": 36,
+   "ch14-grading": 33,
+   "ch15-qc": 45,
+   "ch16-freezing": 39,
+   "ch17-cold-storage": 36,
+   "ch19-reefer": 33,
+   "ch20-container-vessel": 33,
+   "ch21-globe": 39
+  }
+ }
+}

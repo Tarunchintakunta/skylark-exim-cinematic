@@ -352,8 +352,14 @@ export const assetManifest: AssetEntry[] = [
       'additionally anchored to one hero vessel reference so the same ship sails the whole ' +
       'ocean act. A plate holds its entire chapter, carries a slow camera move and gives way ' +
       'only once the next has covered it; clips run faster the faster the visitor scrolls.',
-    scaleNotes: '16:9, stills 1920 wide, clips 1280 wide H.264 with faststart, silent.',
-    optimizationNotes: '6.9 MB of stills and 23 MB of clips. Only the plates on screen decode.',
+    scaleNotes:
+      '16:9. Stills 1920 wide. The clips are no longer served: scripts/make-frames.mjs ' +
+      'explodes each into a scrub strip under public/assets/frames, AVIF at 1440x810 for ' +
+      'desktop and 960x540 for mobile, with a small WebP of every frame as the instant-load ' +
+      'and no-AVIF path. The masters stay in media-src/video so the strips can be rebuilt.',
+    optimizationNotes:
+      '62 MB of frames and 6.9 MB of stills. The scrubber holds three strips at a time and ' +
+      'closes the rest; decoded frames are 4.7 MB each, so nothing else is affordable.',
     fallbackPath: `${F}/`,
   },
 ]

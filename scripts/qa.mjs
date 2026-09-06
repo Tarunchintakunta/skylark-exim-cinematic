@@ -45,29 +45,19 @@ const setProgress = async (page, p) =>
 /**
  * Is there an image on screen at all?
  *
- * The film layer carries the picture for most chapters now, so reading the
- * WebGL canvas alone would report a blank frame on a chapter that is in fact
- * showing a fully loaded plate. A stop passes if the canvas has content, or a
- * plate is up and its media has actually decoded.
+ * The film is drawn to its own 2D canvas now, so measuring "a canvas" is the
+ * right test again; this just makes sure it is the film canvas that gets read
+ * and not the globe's, which only exists for the last two chapters.
  */
 const plateStats = (page) =>
   page.evaluate(() => {
-    let best = null
-    document.querySelectorAll('.plate').forEach((el) => {
-      const o = Number(getComputedStyle(el).opacity)
-      if (o < 0.5) return
-      const m = el.querySelector('img, video')
-      if (!m) return
-      const w = m.tagName === 'VIDEO' ? m.videoWidth || m.naturalWidth : m.naturalWidth
-      const loaded = m.tagName === 'VIDEO' ? m.readyState >= 2 || w > 0 : m.complete && w > 0
-      if (!best || o > best.opacity) best = { opacity: Number(o.toFixed(2)), w: w || 0, loaded: !!loaded }
-    })
-    return best ?? { opacity: 0, w: 0, loaded: false }
+    const cv = document.querySelector('.film-canvas')
+    return { present: !!cv, w: cv?.width ?? 0, h: cv?.height ?? 0 }
   })
 
 const canvasStats = (page) =>
   page.evaluate(() => {
-    const c = document.querySelector('canvas')
+    const c = document.querySelector('.film-canvas') ?? document.querySelector('canvas')
     if (!c) return { ok: false, reason: 'no canvas' }
     const w = 160, h = 90
     const off = document.createElement('canvas')
@@ -216,12 +206,10 @@ const run = async () => {
   const overlaps = []
   report.viewports.forEach((v) =>
     v.stops.forEach((s) => {
-      const canvasHasImage = s.stats.ok && s.stats.range >= 12 && s.stats.colours >= 6
-      const filmHasImage = s.plate && s.plate.loaded && s.plate.w > 0 && s.plate.opacity >= 0.5
-      if (!canvasHasImage && !filmHasImage)
+      if (!s.stats.ok || s.stats.range < 12 || s.stats.colours < 6)
         blanks.push(
-          `${v.name}/${s.label} canvas(range=${s.stats.range} colours=${s.stats.colours}) ` +
-            `plate(op=${s.plate?.opacity} w=${s.plate?.w} loaded=${s.plate?.loaded})`,
+          `${v.name}/${s.label} range=${s.stats.range} colours=${s.stats.colours} ` +
+            `film=${s.plate?.w}x${s.plate?.h}`,
         )
       if (s.overlap.length) overlaps.push(`${v.name}/${s.label}: ${s.overlap.join('; ')}`)
       if (s.overflowX) overlaps.push(`${v.name}/${s.label}: horizontal overflow`)

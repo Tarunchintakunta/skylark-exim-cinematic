@@ -20,21 +20,25 @@ export function useScrollTimeline(containerRef: React.RefObject<HTMLDivElement |
 
     let lenis: Lenis | null = null
     let rafId = 0
+    let tickerFn: ((t: number) => void) | null = null
 
-    if (!reduced) {
+    // Touch devices scroll better natively; smoothing them fights the platform.
+    const coarse = window.matchMedia('(pointer: coarse)').matches
+    if (!reduced && !coarse) {
+      // Short and tight. A long glide keeps moving after the wheel stops, which
+      // reads as lag rather than smoothness when every frame is scrubbed to it.
       lenis = new Lenis({
-        duration: 1.15,
-        easing: (t: number) => 1 - Math.pow(1 - t, 3),
-        wheelMultiplier: 1.0,
-        touchMultiplier: 1.6,
-        syncTouch: true,
+        duration: 0.85,
+        lerp: 0.14,
+        wheelMultiplier: 1.25,
+        smoothWheel: true,
       })
       lenis.on('scroll', ScrollTrigger.update)
-      const raf = (time: number) => {
-        lenis?.raf(time)
-        rafId = requestAnimationFrame(raf)
-      }
-      rafId = requestAnimationFrame(raf)
+      // one ticker for Lenis and GSAP, rather than a second rAF racing it
+      const tick = (t: number) => lenis?.raf(t * 1000)
+      gsap.ticker.add(tick)
+      gsap.ticker.lagSmoothing(0)
+      tickerFn = tick
     }
 
     let lastP = 0
@@ -60,6 +64,7 @@ export function useScrollTimeline(containerRef: React.RefObject<HTMLDivElement |
       window.removeEventListener('resize', onResize)
       st.kill()
       if (rafId) cancelAnimationFrame(rafId)
+      if (tickerFn) gsap.ticker.remove(tickerFn)
       lenis?.destroy()
     }
   }, [containerRef, setProgress, reduced])

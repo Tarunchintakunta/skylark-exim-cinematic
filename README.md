@@ -117,26 +117,34 @@ scroll. Chapter 6 lands swordfish and tuna into an insulated bin on crushed ice.
 
 ## Visual direction
 
-The site's image is film. A Higgsfield plate holds each of chapters 1 to 20,
-rising just before its chapter and giving way only once the next has covered it,
-which is the dissolve. Each plate carries a slow camera move for the length of
-its chapter, and its clip runs faster the faster the visitor scrolls, so the
-footage answers the wheel rather than looping to its own clock.
+The site's image is film, and the film is scrubbed frame by frame against the
+scroll. A `<video>` cannot be driven by a wheel: seeking is asynchronous, lands
+on the nearest keyframe and stalls the main thread, so scrolling gave loose
+motion that kept going after you stopped. Every chapter's clip is therefore
+stored as a strip of stills, and scroll position picks one and draws it to a
+single 2D canvas — one frame per scroll position, exactly, and one composited
+layer for the whole film.
+
+`scripts/make-frames.mjs` builds the strips from `media-src/video`: AVIF at
+1440x810 for the full-resolution strip, a small WebP of every frame that loads
+first so scrubbing works immediately and stands in for browsers without AVIF,
+and a desktop and mobile set each. `public/assets/frames/frames.json` indexes
+them. `src/components/FilmStrip.tsx` draws them.
+
+Decoded frames are uncompressed: a 1440x810 bitmap is 4.7 MB, so one strip
+costs about 190 MB resident. The scrubber holds the current strip and one
+either side and closes the rest, which is the difference between a smooth page
+and a tab that stalls.
 
 Chapters 1 to 8 are anchored to one hero vessel reference, so the same ship
 leaves Visakhapatnam, works the Bay and comes home.
 
-WebGL does two jobs. `src/components/FilmFx.tsx` is a transparent canvas over
-the film carrying what a camera would have caught in front of the subject:
-spray on the ocean chapters, dust in the processing hall, cold vapour off the
-freezer, plus a grain and vignette pass and a bloom on each chapter cut. And
-the globe keeps real geometry, because export routes have to be dimensional.
-
-The Blender scenes for the other nineteen districts are intact under
-`src/scenes` and `blender/scripts`, and still drive the collector plates that
-seed every Higgsfield frame, but they are no longer mounted: they sat behind
-opaque plates costing GLB and GPU for nothing. `LIVE_STAGES` in `src/App.tsx`
-is the switch.
+WebGL is now only the globe, and its canvas is not mounted at all until the
+globe chapter is in reach — a full-viewport canvas left mounted is another large
+layer for the compositor to carry down the whole page for nothing. The Blender
+scenes for the other districts are intact under `src/scenes` and
+`blender/scripts`, and still drive the collector plates that seed every
+Higgsfield frame; `LIVE_STAGES` in `src/App.tsx` is the switch.
 
 ## Verification
 
@@ -148,6 +156,10 @@ validation. Screenshots land in `qa/shots/`, the machine-readable result in
 `qa/report.json`. Run it against the production build with
 `QA_URL=http://127.0.0.1:4173/ node scripts/qa.mjs` after `npm run preview`;
 with no `QA_URL` it targets the dev server on port 5173.
+
+`node scripts/perf.mjs` measures frame times while scrolling the whole story
+(`DPR=2` to reproduce a retina display) and `node scripts/longtasks.mjs` reports
+main-thread blocking. Both take `QA_URL`.
 
 Four smaller helpers sit beside it and take a chapter id plus a scroll fraction,
 for tracking down a bad frame without scrubbing by hand. `scripts/shot.mjs`
