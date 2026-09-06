@@ -265,7 +265,7 @@ canvas { display: block; touch-action: pan-y; }
   color: rgba(228, 242, 246, 0.62);
   white-space: nowrap;
 }
-.chapter-copy .facts span + span::before {
+.chapter-copy .facts span:not(:last-child)::after {
   content: '/';
   margin: 0 10px;
   color: rgba(214, 236, 242, 0.26);
@@ -304,7 +304,7 @@ canvas { display: block; touch-action: pan-y; }
   font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em;
   text-transform: uppercase; color: rgba(228, 242, 246, 0.58);
 }
-.hero-meta span + span::before {
+.hero-meta span:not(:last-child)::after {
   content: '/'; margin: 0 10px; color: rgba(214, 236, 242, 0.26);
 }
 .scroll-hint {
@@ -573,7 +573,7 @@ canvas { display: block; touch-action: pan-y; }
   .chapter-copy h2 { font-size: clamp(21px, 6.2vw, 32px); }
   .chapter-copy p { font-size: 13.5px; }
   .chapter-copy .facts span, .hero-meta span { font-size: 9px; letter-spacing: 0.12em; }
-  .chapter-copy .facts span + span::before, .hero-meta span + span::before { margin: 0 7px; }
+  .chapter-copy .facts span:not(:last-child)::after, .hero-meta span:not(:last-child)::after { margin: 0 7px; }
   /* only the readings a buyer actually needs survive the narrowest screen */
   .hud-row:nth-child(n + 6) { display: none; }
   .hud-card { grid-template-columns: 92px minmax(0, 1fr); }

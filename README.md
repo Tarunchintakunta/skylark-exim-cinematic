@@ -115,6 +115,29 @@ Chapter 5 puts the crew on the gear: a hauling team bringing a full net bag over
 the rail, a cast net in flight, mixed catch landing on deck, all scrubbed by
 scroll. Chapter 6 lands swordfish and tuna into an insulated bin on crushed ice.
 
+## Visual direction
+
+The site's image is film. A Higgsfield plate holds each of chapters 1 to 20,
+rising just before its chapter and giving way only once the next has covered it,
+which is the dissolve. Each plate carries a slow camera move for the length of
+its chapter, and its clip runs faster the faster the visitor scrolls, so the
+footage answers the wheel rather than looping to its own clock.
+
+Chapters 1 to 8 are anchored to one hero vessel reference, so the same ship
+leaves Visakhapatnam, works the Bay and comes home.
+
+WebGL does two jobs. `src/components/FilmFx.tsx` is a transparent canvas over
+the film carrying what a camera would have caught in front of the subject:
+spray on the ocean chapters, dust in the processing hall, cold vapour off the
+freezer, plus a grain and vignette pass and a bloom on each chapter cut. And
+the globe keeps real geometry, because export routes have to be dimensional.
+
+The Blender scenes for the other nineteen districts are intact under
+`src/scenes` and `blender/scripts`, and still drive the collector plates that
+seed every Higgsfield frame, but they are no longer mounted: they sat behind
+opaque plates costing GLB and GPU for nothing. `LIVE_STAGES` in `src/App.tsx`
+is the switch.
+
 ## Verification
 
 `npm run qa` drives the real page at 1440x900, 1920x1080, 834x1194 and 390x844.
