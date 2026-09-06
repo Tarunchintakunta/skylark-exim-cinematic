@@ -10,6 +10,7 @@ export function ChapterCopy() {
   return (
     <div className="copy-layer" aria-live="polite">
       <HeroBlock />
+      <ScrollHint />
       {chapters.slice(1).map((c) => (
         <Block key={c.id} c={c} />
       ))}
@@ -28,7 +29,9 @@ function useCopyAnim(ref: React.RefObject<HTMLDivElement | null>, c: Chapter, he
       let a = 0
       let shift = 0
       if (p > c.start - inF && p < c.end + outF) {
-        const rise = smoothstep((p - c.start) / inF)
+        // the hero opens the page, so it is already up when the visitor lands.
+        // Fading it in from nothing left the first frame with no words on it.
+        const rise = hero ? 1 : smoothstep((p - c.start) / inF)
         const fall = 1 - smoothstep((p - (c.end - outF)) / outF)
         a = clamp01(Math.min(rise, fall))
         shift = (1 - rise) * 34 - (1 - fall) * 22
@@ -46,6 +49,35 @@ function useCopyAnim(ref: React.RefObject<HTMLDivElement | null>, c: Chapter, he
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
   }, [ref, c, hero])
+}
+
+/**
+ * The only control on the site is the scroll wheel, so the first frame has to
+ * say so. It sat inside the hero block before, which positioned it against the
+ * copy rather than the viewport and hid it behind the product chips.
+ */
+function ScrollHint() {
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    let raf = 0
+    const tick = () => {
+      const a = 1 - smoothstep(scrollRef.current / 0.012)
+      const el = ref.current
+      if (el) {
+        el.style.opacity = String(a)
+        el.style.visibility = a < 0.01 ? 'hidden' : 'visible'
+      }
+      raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [])
+  return (
+    <div className="scroll-hint" ref={ref}>
+      <span>Scroll to sail</span>
+      <span className="bar" />
+    </div>
+  )
 }
 
 function HeroBlock() {
@@ -80,10 +112,6 @@ function HeroBlock() {
             {f}
           </span>
         ))}
-      </div>
-      <div className="scroll-hint">
-        <span>Scroll to sail</span>
-        <span className="bar" />
       </div>
     </div>
   )

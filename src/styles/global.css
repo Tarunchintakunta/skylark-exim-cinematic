@@ -284,7 +284,8 @@ canvas { display: block; touch-action: pan-y; }
   max-width: 48ch; color: rgba(244, 250, 250, 0.88);
 }
 .scroll-hint {
-  position: absolute; left: 50%; bottom: 34px; transform: translateX(-50%);
+  position: fixed; left: 50%; bottom: 46px; transform: translateX(-50%);
+  z-index: 6; pointer-events: none;
   display: flex; flex-direction: column; align-items: center; gap: 9px;
   font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.26em;
   text-transform: uppercase; color: rgba(244, 250, 250, 0.6);
