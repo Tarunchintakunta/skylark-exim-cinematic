@@ -1,0 +1,385 @@
+{
+  "collector": "higgsfield-blender-collector",
+  "project": "Skylark Exim Cinematic Scroll",
+  "source": "Blender 5.2 via Blender MCP",
+  "units": "metres, Z up in Blender, Y up in exported GLB",
+  "notes": "Each plate is rendered from the exact camera used by the matching website chapter, so a Higgsfield image-to-video job started from the plate lands in the same framing.",
+  "negative_prompt": "night, storm, dirty handling, unsafe deck, spoiled seafood, blood, gore, cartoon, low quality, illegible text, fake logos, tourist beach",
+  "plates": [
+    {
+      "id": "ch01-opening-port",
+      "file": "/public/assets/media/fallbacks/ch01-opening-port.jpg",
+      "prompt": "Premium cinematic shot of a large Indian fishing vessel preparing to leave Visakhapatnam port for the Bay of Bengal, bright 10 AM sunlight, blue-green water, humid coastal haze, fishermen boarding with clean equipment, insulated crates and nets visible, high-end seafood export film, realistic maritime scale, slow dolly camera, 16:9",
+      "negative": "night, storm, dirty handling, unsafe deck, spoiled seafood, blood, gore, cartoon, low quality, illegible text, fake logos, tourist beach",
+      "camera": {
+        "cam_pos": [
+          -30,
+          -46,
+          12
+        ],
+        "cam_target": [
+          2,
+          0,
+          4
+        ],
+        "fov": 44
+      },
+      "web_path": "/assets/media/fallbacks/ch01-opening-port.jpg"
+    },
+    {
+      "id": "ch02-boarding",
+      "file": "/public/assets/media/fallbacks/ch02-boarding.jpg",
+      "prompt": "Indian fishing crew boarding a large fishing vessel at Visakhapatnam with nets, insulated crates and ice boxes, bright late-morning sunlight, clean professional seafood operation, cinematic dock-to-deck camera push, premium export film, 16:9",
+      "negative": "night, storm, dirty handling, unsafe deck, spoiled seafood, blood, gore, cartoon, low quality, illegible text, fake logos, tourist beach",
+      "camera": {
+        "cam_pos": [
+          -14,
+          -17,
+          8.5
+        ],
+        "cam_target": [
+          -2,
+          1,
+          4.2
+        ],
+        "fov": 48
+      },
+      "web_path": "/assets/media/fallbacks/ch02-boarding.jpg"
+    },
+    {
+      "id": "ch05-nets",
+      "file": "/public/assets/media/fallbacks/ch05-nets.jpg",
+      "prompt": "Indian fishing crew casting nets from a large fishing vessel in the Bay of Bengal, bright daylight, waves and clouds, cinematic deck-level camera, clean professional seafood operation, ropes and nets moving through water, export-quality documentary commercial, 16:9",
+      "negative": "night, storm, dirty handling, unsafe deck, spoiled seafood, blood, gore, cartoon, low quality, illegible text, fake logos, tourist beach",
+      "camera": {
+        "cam_pos": [
+          -13,
+          -16,
+          7
+        ],
+        "cam_target": [
+          0,
+          3,
+          -1
+        ],
+        "fov": 48
+      },
+      "web_path": "/assets/media/fallbacks/ch05-nets.jpg"
+    },
+    {
+      "id": "ch06-catch",
+      "file": "/public/assets/media/fallbacks/ch06-catch.jpg",
+      "prompt": "Premium seafood export cinematic scene showing swordfish and tuna as hero ocean catch on a clean fishing vessel deck, bright Bay of Bengal daylight, ice crates, careful handling, realistic texture, no gore, high-end Indian export film, 16:9",
+      "negative": "night, storm, dirty handling, unsafe deck, spoiled seafood, blood, gore, cartoon, low quality, illegible text, fake logos, tourist beach",
+      "camera": {
+        "cam_pos": [
+          3.2,
+          -4.4,
+          1.5
+        ],
+        "cam_target": [
+          0,
+          1.2,
+          0
+        ],
+        "fov": 40
+      },
+      "web_path": "/assets/media/fallbacks/ch06-catch.jpg"
+    },
+    {
+      "id": "ch07-chilled-hold",
+      "file": "/public/assets/media/fallbacks/ch07-chilled-hold.jpg",
+      "prompt": "Cinematic close-up of swordfish and tuna moving into clean onboard chilled fish storage, crushed ice, temperature display, insulated storage hold, bright coastal daylight glints, professional cold-chain discipline at sea, premium seafood export commercial, 16:9",
+      "negative": "night, storm, dirty handling, unsafe deck, spoiled seafood, blood, gore, cartoon, low quality, illegible text, fake logos, tourist beach",
+      "camera": {
+        "cam_pos": [
+          -2.35,
+          -1.95,
+          2.15
+        ],
+        "cam_target": [
+          1.4,
+          -0.5,
+          1.05
+        ],
+        "fov": 58
+      },
+      "web_path": "/assets/media/fallbacks/ch07-chilled-hold.jpg"
+    },
+    {
+      "id": "ch09-transfer",
+      "file": "/public/assets/media/fallbacks/ch09-transfer.jpg",
+      "prompt": "Large Indian fishing vessel returning to Visakhapatnam port from the Bay of Bengal, late morning sunlight, cranes and containers visible, clean cold-chain transfer operation beginning, cinematic aerial-to-dock camera, premium seafood logistics export film, 16:9",
+      "negative": "night, storm, dirty handling, unsafe deck, spoiled seafood, blood, gore, cartoon, low quality, illegible text, fake logos, tourist beach",
+      "camera": {
+        "cam_pos": [
+          -18,
+          -26,
+          9
+        ],
+        "cam_target": [
+          2,
+          -8,
+          2
+        ],
+        "fov": 48
+      },
+      "web_path": "/assets/media/fallbacks/ch09-transfer.jpg"
+    },
+    {
+      "id": "ch10-processing",
+      "file": "/public/assets/media/fallbacks/ch10-processing.jpg",
+      "prompt": "Premium seafood processing facility in India handling swordfish, tuna and shrimp, stainless steel tables, clean cutting and portioning stations, hygienic PPE workers, washing channels, grading conveyor, bright white-blue industrial light, non-graphic, high-trust export quality, 16:9",
+      "negative": "night, storm, dirty handling, unsafe deck, spoiled seafood, blood, gore, cartoon, low quality, illegible text, fake logos, tourist beach",
+      "camera": {
+        "cam_pos": [
+          -11.4,
+          -6.6,
+          2.7
+        ],
+        "cam_target": [
+          4.0,
+          1.5,
+          1.5
+        ],
+        "fov": 56
+      },
+      "web_path": "/assets/media/fallbacks/ch10-processing.jpg"
+    },
+    {
+      "id": "ch12-ponds",
+      "file": "/public/assets/media/fallbacks/ch12-ponds.jpg",
+      "prompt": "Aerial cinematic view of coastal Andhra Pradesh aquaculture shrimp ponds in a precise grid with bund roads, water sampling technician at the pond edge, harvest crates and batch tags, bright 10 AM daylight, audit-ready and organised, premium Indian seafood export film, 16:9",
+      "negative": "night, storm, dirty handling, unsafe deck, spoiled seafood, blood, gore, cartoon, low quality, illegible text, fake logos, tourist beach",
+      "camera": {
+        "cam_pos": [
+          -30,
+          -96,
+          62
+        ],
+        "cam_target": [
+          0,
+          0,
+          0
+        ],
+        "fov": 44
+      },
+      "web_path": "/assets/media/fallbacks/ch12-ponds.jpg"
+    },
+    {
+      "id": "ch13-product-forms",
+      "file": "/public/assets/media/fallbacks/ch13-product-forms.jpg",
+      "prompt": "Premium export shrimp product forms presented as a clean seafood catalogue: HOSO head on shell on, HLSO headless shell on, PUD peeled undeveined, PTO peeled tail on, stainless trays, bright even studio light, consistent scale, high-end product photography, 16:9",
+      "negative": "night, storm, dirty handling, unsafe deck, spoiled seafood, blood, gore, cartoon, low quality, illegible text, fake logos, tourist beach",
+      "camera": {
+        "cam_pos": [
+          2.2,
+          -3.4,
+          2.6
+        ],
+        "cam_target": [
+          0.4,
+          0,
+          0.1
+        ],
+        "fov": 40
+      },
+      "web_path": "/assets/media/fallbacks/ch13-product-forms.jpg"
+    },
+    {
+      "id": "ch15-qc",
+      "file": "/public/assets/media/fallbacks/ch15-qc.jpg",
+      "prompt": "Sterile seafood residue testing lab in India, serious QC inspector, sample vials, lab instrument, HACCP and EIC documentation mood, residue certificate folder, bright clean lighting, evidence-led premium export film, 16:9",
+      "negative": "night, storm, dirty handling, unsafe deck, spoiled seafood, blood, gore, cartoon, low quality, illegible text, fake logos, tourist beach",
+      "camera": {
+        "cam_pos": [
+          -3.4,
+          -2.9,
+          2.0
+        ],
+        "cam_target": [
+          1.0,
+          2.0,
+          1.15
+        ],
+        "fov": 52
+      },
+      "web_path": "/assets/media/fallbacks/ch15-qc.jpg"
+    },
+    {
+      "id": "ch16-freezing",
+      "file": "/public/assets/media/fallbacks/ch16-freezing.jpg",
+      "prompt": "Beautiful cinematic macro of seafood entering IQF freezing and glazing, swordfish and tuna portions and shrimp products, frost crystals, clean glazing mist, cold vapour, stainless steel, bright cold-chain lighting, premium export commercial, 16:9",
+      "negative": "night, storm, dirty handling, unsafe deck, spoiled seafood, blood, gore, cartoon, low quality, illegible text, fake logos, tourist beach",
+      "camera": {
+        "cam_pos": [
+          -9.4,
+          -5.1,
+          2.6
+        ],
+        "cam_target": [
+          4.0,
+          -1.5,
+          1.6
+        ],
+        "fov": 54
+      },
+      "web_path": "/assets/media/fallbacks/ch16-freezing.jpg"
+    },
+    {
+      "id": "ch17-cold-storage",
+      "file": "/public/assets/media/fallbacks/ch17-cold-storage.jpg",
+      "prompt": "Large seafood export cold storage, long aisle of pallet racking receding into the distance, sealed white cartons, temperature display reading minus 20 degrees Celsius, 700 pallet capacity, cold blue-white lighting, premium logistics film, 16:9",
+      "negative": "night, storm, dirty handling, unsafe deck, spoiled seafood, blood, gore, cartoon, low quality, illegible text, fake logos, tourist beach",
+      "camera": {
+        "cam_pos": [
+          -17.0,
+          0,
+          2.6
+        ],
+        "cam_target": [
+          16,
+          0,
+          3.0
+        ],
+        "fov": 58
+      },
+      "web_path": "/assets/media/fallbacks/ch17-cold-storage.jpg"
+    },
+    {
+      "id": "ch18-documents",
+      "file": "/public/assets/media/fallbacks/ch18-documents.jpg",
+      "prompt": "Export documentation desk for Indian seafood: health certificate, packing list, certificate of origin, residue certificate, compliance records, HACCP and EIC documents assembled into a clean stack, bright office light, precise and trustworthy, premium export film, 16:9",
+      "negative": "night, storm, dirty handling, unsafe deck, spoiled seafood, blood, gore, cartoon, low quality, illegible text, fake logos, tourist beach",
+      "camera": {
+        "az": 52,
+        "el": 44,
+        "fov": 36,
+        "fill": 1.15
+      },
+      "web_path": "/assets/media/fallbacks/ch18-documents.jpg"
+    },
+    {
+      "id": "ch19-reefer",
+      "file": "/public/assets/media/fallbacks/ch19-reefer.jpg",
+      "prompt": "Packed seafood export cartons loaded into a reefer container at Visakhapatnam, temperature set to minus 20, doors closing, seal bar dropping, afternoon sunlight, precise cold-chain discipline, premium export logistics film, 16:9",
+      "negative": "night, storm, dirty handling, unsafe deck, spoiled seafood, blood, gore, cartoon, low quality, illegible text, fake logos, tourist beach",
+      "camera": {
+        "cam_pos": [
+          11,
+          -9,
+          4.6
+        ],
+        "cam_target": [
+          0,
+          0,
+          1.4
+        ],
+        "fov": 46
+      },
+      "web_path": "/assets/media/fallbacks/ch19-reefer.jpg"
+    },
+    {
+      "id": "ch20-container-vessel",
+      "file": "/public/assets/media/fallbacks/ch20-container-vessel.jpg",
+      "prompt": "Top-down cinematic sky view of reefer containers moving through Visakhapatnam port and loading onto a large container vessel, afternoon sunlight, precise container grid, premium seafood export logistics, 16:9",
+      "negative": "night, storm, dirty handling, unsafe deck, spoiled seafood, blood, gore, cartoon, low quality, illegible text, fake logos, tourist beach",
+      "camera": {
+        "cam_pos": [
+          -150,
+          -230,
+          120
+        ],
+        "cam_target": [
+          0,
+          0,
+          14
+        ],
+        "fov": 38
+      },
+      "web_path": "/assets/media/fallbacks/ch20-container-vessel.jpg"
+    },
+    {
+      "id": "ch21-globe",
+      "file": "/public/assets/media/fallbacks/ch21-globe.jpg",
+      "prompt": "Stylised premium globe with glowing export route arcs leaving India for Rotterdam, Osaka, Dubai, New York and Singapore, clean cinematic navy and warm gold, seafood export logistics, not crypto styling, 16:9",
+      "negative": "night, storm, dirty handling, unsafe deck, spoiled seafood, blood, gore, cartoon, low quality, illegible text, fake logos, tourist beach",
+      "camera": {
+        "az": 62,
+        "el": 18,
+        "fov": 36,
+        "fill": 1.45
+      },
+      "web_path": "/assets/media/fallbacks/ch21-globe.jpg"
+    }
+  ],
+  "turntables": [
+    {
+      "id": "large_fishing_vessel",
+      "frames": [
+        "/public/assets/media/higgsfield/collector/turntables/large_fishing_vessel_00.jpg",
+        "/public/assets/media/higgsfield/collector/turntables/large_fishing_vessel_01.jpg",
+        "/public/assets/media/higgsfield/collector/turntables/large_fishing_vessel_02.jpg",
+        "/public/assets/media/higgsfield/collector/turntables/large_fishing_vessel_03.jpg"
+      ]
+    },
+    {
+      "id": "swordfish_hero",
+      "frames": [
+        "/public/assets/media/higgsfield/collector/turntables/swordfish_hero_00.jpg",
+        "/public/assets/media/higgsfield/collector/turntables/swordfish_hero_01.jpg",
+        "/public/assets/media/higgsfield/collector/turntables/swordfish_hero_02.jpg",
+        "/public/assets/media/higgsfield/collector/turntables/swordfish_hero_03.jpg"
+      ]
+    },
+    {
+      "id": "tuna_hero",
+      "frames": [
+        "/public/assets/media/higgsfield/collector/turntables/tuna_hero_00.jpg",
+        "/public/assets/media/higgsfield/collector/turntables/tuna_hero_01.jpg",
+        "/public/assets/media/higgsfield/collector/turntables/tuna_hero_02.jpg",
+        "/public/assets/media/higgsfield/collector/turntables/tuna_hero_03.jpg"
+      ]
+    },
+    {
+      "id": "shrimp_product_forms",
+      "frames": [
+        "/public/assets/media/higgsfield/collector/turntables/shrimp_product_forms_00.jpg",
+        "/public/assets/media/higgsfield/collector/turntables/shrimp_product_forms_01.jpg",
+        "/public/assets/media/higgsfield/collector/turntables/shrimp_product_forms_02.jpg",
+        "/public/assets/media/higgsfield/collector/turntables/shrimp_product_forms_03.jpg"
+      ]
+    },
+    {
+      "id": "reefer_container",
+      "frames": [
+        "/public/assets/media/higgsfield/collector/turntables/reefer_container_00.jpg",
+        "/public/assets/media/higgsfield/collector/turntables/reefer_container_01.jpg",
+        "/public/assets/media/higgsfield/collector/turntables/reefer_container_02.jpg",
+        "/public/assets/media/higgsfield/collector/turntables/reefer_container_03.jpg"
+      ]
+    },
+    {
+      "id": "globe_routes_from_india",
+      "frames": [
+        "/public/assets/media/higgsfield/collector/turntables/globe_routes_from_india_00.jpg",
+        "/public/assets/media/higgsfield/collector/turntables/globe_routes_from_india_01.jpg",
+        "/public/assets/media/higgsfield/collector/turntables/globe_routes_from_india_02.jpg",
+        "/public/assets/media/higgsfield/collector/turntables/globe_routes_from_india_03.jpg"
+      ]
+    }
+  ],
+  "submission": {
+    "image_model": "nano_banana_pro",
+    "video_model": "seedance_2_0",
+    "aspect_ratio": "16:9",
+    "duration_seconds": 5,
+    "role": "start_image",
+    "flow": [
+      "media_upload the plate PNG, then media_confirm",
+      "generate_image with the plate as image_references to raise it to a photoreal frame",
+      "generate_video with that frame as start_image to produce the chapter loop",
+      "save the MP4 to public/assets/media/higgsfield/<chapter id>.mp4"
+    ]
+  }
+}
