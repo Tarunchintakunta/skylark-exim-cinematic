@@ -76,6 +76,13 @@ export const cinematicPlates: CinematicPlate[] = [
     alt: 'The processing hall, stainless tables and workers in clean protective clothing',
   },
   {
+    chapter: 'ch11-cutting',
+    still: `${S}/ch11-cutting.jpg`,
+    video: `${V}/ch11-cutting.mp4`,
+    from: 0.24, to: 0.95, peak: 1,
+    alt: 'Workers in protective clothing laying trimmed tuna loin portions onto a stainless tray',
+  },
+  {
     chapter: 'ch12-pond-origin',
     still: `${S}/ch12-ponds.jpg`,
     video: `${V}/ch12-ponds.mp4`,
@@ -87,6 +94,13 @@ export const cinematicPlates: CinematicPlate[] = [
     still: `${S}/ch13-product-forms.jpg`,
     from: 0.28, to: 0.95, peak: 1,
     alt: 'Export shrimp product forms presented on stainless trays',
+  },
+  {
+    chapter: 'ch14-grading',
+    still: `${S}/ch14-grading.jpg`,
+    video: `${V}/ch14-grading.mp4`,
+    from: 0.24, to: 0.95, peak: 1,
+    alt: 'The grading conveyor separating shrimp and fish portions into size grades',
   },
   {
     chapter: 'ch15-qc-and-residue-testing',
@@ -113,7 +127,7 @@ export const cinematicPlates: CinematicPlate[] = [
     chapter: 'ch18-export-documents',
     still: `${S}/ch18-documents.jpg`,
     from: 0.26, to: 0.95, peak: 1,
-    alt: 'Export certificates and compliance papers assembled on the documentation desk',
+    alt: 'A squared stack of clean export paperwork resting on a stainless documentation desk',
   },
   {
     chapter: 'ch19-reefer-containers',
