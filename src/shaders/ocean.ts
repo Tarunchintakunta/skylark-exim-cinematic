@@ -75,7 +75,11 @@ void main() {
   d += wave(vec2(-0.9, 0.15), 0.09 * s, 3.1,  1.8, p, n);
   pos += d;
   vCrest = clamp((d.z / max(0.35, 2.2 * s)) * 0.5 + 0.5, 0.0, 1.0);
-  vNormal = normalize(n);
+  // the plane is authored z-up and the mesh carries a -90 degree X rotation, so
+  // the wave normal has to reach the fragment shader in world space. It did not,
+  // which meant every lighting term on the sea was comparing a local normal
+  // against world-space light and view vectors.
+  vNormal = normalize(mat3(modelMatrix) * normalize(n));
   vec4 wp = modelMatrix * vec4(pos, 1.0);
   vWorld = wp.xyz;
   gl_Position = projectionMatrix * viewMatrix * wp;
@@ -96,7 +100,7 @@ varying vec3 vNormal;
 varying float vCrest;
 
 void main() {
-  vec3 n = normalize(vec3(vNormal.x, vNormal.y, vNormal.z));
+  vec3 n = normalize(vNormal);
   vec3 viewDir = normalize(cameraPosition - vWorld);
   float fres = pow(1.0 - clamp(dot(n, viewDir), 0.0, 1.0), 3.0);
 
@@ -105,6 +109,12 @@ void main() {
   // open water is deep water: away from the harbour the colour drops toward navy,
   // which is what lets white foam and a wake read from directly overhead
   vec3 base = mix(uShallow, uDeep, clamp(0.34 + uDepthBias + 0.34 * depthMix, 0.0, 1.0));
+
+  // wrapped diffuse. Without it the sea's only variation came from specular and
+  // foam, both of which flatten out when the camera looks straight down, so the
+  // aerial chapter rendered the Bay as one uniform block of colour.
+  float nl = clamp(dot(n, uSunDir) * 0.5 + 0.5, 0.0, 1.0);
+  base *= mix(0.70, 1.26, nl * nl);
 
   // sun glint
   vec3 h = normalize(uSunDir + viewDir);

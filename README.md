@@ -122,7 +122,16 @@ It lands a stop on every chapter, reads pixels back off the canvas to prove
 nothing is blank, checks overlay bounding boxes for overlap and horizontal
 overflow, asserts the business vocabulary is present, and exercises RFQ
 validation. Screenshots land in `qa/shots/`, the machine-readable result in
-`qa/report.json`.
+`qa/report.json`. Run it against the production build with
+`QA_URL=http://127.0.0.1:4173/ node scripts/qa.mjs` after `npm run preview`;
+with no `QA_URL` it targets the dev server on port 5173.
+
+Four smaller helpers sit beside it and take a chapter id plus a scroll fraction,
+for tracking down a bad frame without scrubbing by hand. `scripts/shot.mjs`
+captures one frame. `scripts/probe.mjs` raycasts screen coordinates and names
+what they hit. `scripts/parts.mjs` and `scripts/sub.mjs` print world bounding
+boxes for a model's meshes. They need `?qa=1`, which is what exposes the live
+scene on `window.__SKYLARK_R3F__`.
 
 ## Content accuracy
 

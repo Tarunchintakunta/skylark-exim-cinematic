@@ -245,7 +245,7 @@ function Wake({ heading }: { heading: React.MutableRefObject<number> }) {
             // a 34 m boat does not throw a tanker's Kelvin V. What reads is the
             // churned lane boiling off the transom, edged by two modest arms.
             float lane = smoothstep(0.34 + t * 0.30, 0.0, av);
-            float boil = exp(-pow(t / 0.16, 2.0)) * smoothstep(0.42, 0.0, av);
+            float boil = exp(-pow(t / 0.22, 2.0)) * smoothstep(0.46, 0.0, av);
             float turb = pow(max(churn - 0.30, 0.0) * 1.85, 1.10);
             float band = lane * (0.16 + 1.55 * turb);
             band *= mix(0.30, 1.0, pow(1.0 - t, 0.55));
@@ -256,7 +256,9 @@ function Wake({ heading }: { heading: React.MutableRefObject<number> }) {
             armLine *= 0.45 + 0.75 * churn;
             armLine *= mix(0.22, 1.0, pow(1.0 - t, 0.8));
 
-            float foam = band * 1.0 + armLine * 0.80 + boil * 1.25;
+            // the boil off the transom is what reads from altitude, where the
+            // long trail is too diffuse to see
+            float foam = band * 1.0 + armLine * 0.80 + boil * 2.20;
 
             // dissolve at the far end and inside the plane edge, never at the arms
             float fade = smoothstep(1.0, 0.86, t) * smoothstep(0.96, 0.80, av);
