@@ -306,7 +306,9 @@ export function GlobeStage() {
     const p = scrollRef.current
     const gp = localProgress(p, ch('ch21-globe-and-routes'))
     if (g.current) {
-      g.current.rotation.y = -0.9 + gp * 0.55 + s.clock.elapsedTime * 0.012
+      // hold Visakhapatnam toward the camera: the routes have to be seen
+      // leaving India, not the far side of the Atlantic
+      g.current.rotation.y = -2.85 + gp * 0.5 + s.clock.elapsedTime * 0.012
       g.current.rotation.x = 0.16
     }
   })
@@ -315,16 +317,12 @@ export function GlobeStage() {
       <group ref={g}>
         <Model url="/assets/models/export/globe_routes_from_india.glb" />
       </group>
-      <Model
-        url="/assets/models/containers/reefer_container.glb"
-        position={[-11.5, -5.4, 4.5]}
-        rotation={[0, 0.6, 0]}
-        scale={0.42}
-      />
-      <ambientLight intensity={0.18} color="#9fc8dc" />
-      <directionalLight position={[10, 8, 12]} intensity={2.2} color="#ffffff" />
-      <pointLight position={[-8, 2, 6]} intensity={40} distance={40} color="#2fa889" />
-      <pointLight position={[8, -4, -6]} intensity={30} distance={40} color="#0e6f8e" />
+      <ambientLight intensity={0.16} color="#9fc8dc" />
+      {/* the key sits off-axis so the sphere keeps a terminator; a light straight
+          down the lens flattened the continents into the sky */}
+      <directionalLight position={[6, 9, 14]} intensity={1.5} color="#ffffff" />
+      <pointLight position={[-8, 2, 6]} intensity={34} distance={40} color="#2fa889" />
+      <pointLight position={[8, -4, -6]} intensity={26} distance={40} color="#0e6f8e" />
     </group>
   )
 }

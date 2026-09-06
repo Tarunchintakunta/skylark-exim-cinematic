@@ -110,7 +110,14 @@ const run = async () => {
     })
     page.on('pageerror', (e) => consoleErrors.push('pageerror: ' + String(e).slice(0, 300)))
     const failedReq = []
-    page.on('requestfailed', (r) => failedReq.push(`${r.url()} ${r.failure()?.errorText ?? ''}`))
+    page.on('requestfailed', (r) => {
+      const why = r.failure()?.errorText ?? ''
+      // The harness jumps between chapters far faster than a person scrolls, so
+      // a plate video can be unmounted while its bytes are still in flight. That
+      // is the browser cancelling its own request, not the server failing one.
+      if (why.includes('ERR_ABORTED') && /\.(mp4|webm)(\?|$)/.test(r.url())) return
+      failedReq.push(`${r.url()} ${why}`)
+    })
     page.on('response', (r) => {
       if (r.status() >= 400) failedReq.push(`${r.status()} ${r.url()}`)
     })

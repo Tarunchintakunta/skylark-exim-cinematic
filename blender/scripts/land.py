@@ -197,7 +197,7 @@ def project(lat, lon, r):
             r * math.sin(la))
 
 
-def land_mesh(name, ring, radius, material, parent, thickness=0.0, max_span=13.0):
+def land_mesh(name, ring, radius, material, parent, thickness=0.0, max_span=9.0):
     """Build one landmass as a shell sitting just proud of the globe surface."""
     import bpy
     verts = [tuple(v) for v in ring]
@@ -227,10 +227,11 @@ def land_mesh(name, ring, radius, material, parent, thickness=0.0, max_span=13.0
     me.from_pydata(pts, [], faces)
     me.validate()
     me.update()
-    # flat shading: these are thin plates, and interpolated normals across the
-    # shell make them read as inflated pillows rather than land
+    # smooth shading: the shell follows the sphere, so interpolated normals put
+    # the land under the same terminator as the ocean instead of reading as a
+    # flat paper cut-out floating above it
     for poly in me.polygons:
-        poly.use_smooth = False
+        poly.use_smooth = True
     if material is not None:
         me.materials.append(material)
     o = bpy.data.objects.new(name, me)
