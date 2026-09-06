@@ -155,7 +155,7 @@ const raw: Omit<Chapter, 'start' | 'end' | 'index'>[] = [
     eyebrow: 'Reefer loading · export documentation',
     title: 'The promise is now under seal.',
     lines: ['Temperature set, doors closed, seal bar down. The paperwork travels with the container.'],
-    facts: ['Reefer −20 °C', '40 ft ISO'],
+    facts: ['Reefer −18 °C', '40 ft ISO'],
     detail: ['Health certificate', 'Packing list', 'Certificate of origin', 'Residue certificate', 'Compliance records'],
     icon: Container,
   },
