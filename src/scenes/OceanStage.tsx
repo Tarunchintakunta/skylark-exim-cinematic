@@ -20,9 +20,11 @@ function Ocean({ quality }: { quality: string }) {
       ref.current.position.x = Math.round(state.camera.position.x / 40) * 40
       ref.current.position.z = Math.round(state.camera.position.z / 40) * 40
     }
-    // calm in the harbour, adventurous in the open bay, calm again on return
-    const bay = smoothstep((p - ch('ch02-boarding').start) / 0.14)
-    const home = 1 - smoothstep((p - ch('ch08-return-to-port').start) / 0.1)
+    // calm in the harbour, adventurous in the open bay, calm again on return.
+    // Both ramps are chapter-relative: absolute page fractions made the return
+    // leg far longer than the chapter, so she came home over a black sea.
+    const bay = clamp01(smoothstep(localProgress(p, ch('ch02-boarding')) * 1.7))
+    const home = 1 - clamp01(smoothstep(localProgress(p, ch('ch08-return-to-port')) * 1.15))
     const swell = 0.22 + 0.95 * Math.min(bay, Math.max(0.28, home))
     mat.uniforms.uSwell.value = swell
     swellRef.current = swell
@@ -260,7 +262,7 @@ function Wake({ heading }: { heading: React.MutableRefObject<number> }) {
             float fade = smoothstep(1.0, 0.86, t) * smoothstep(0.96, 0.80, av);
             // alpha rises faster than foam so the thin stuff disappears entirely
             // instead of veiling the water in grey
-            float a = pow(clamp(foam, 0.0, 1.0), 1.7) * fade * uOpacity;
+            float a = pow(clamp(foam, 0.0, 1.0), 2.2) * fade * uOpacity;
             if (a < 0.014) discard;
 
             vec3 col = mix(uWater, uFoam, clamp(foam * 2.4, 0.0, 1.0));
@@ -277,7 +279,8 @@ function Wake({ heading }: { heading: React.MutableRefObject<number> }) {
       smoothstep((p - ch('ch03-compass').start) / 0.06) *
       (1 - smoothstep((p - ch('ch08-return-to-port').end) / 0.04))
     mat.uniforms.uTime.value = state.clock.elapsedTime
-    mat.uniforms.uOpacity.value = 0.95 * moving
+    // a slow inbound run does not throw the wake a working passage does
+    mat.uniforms.uOpacity.value = 0.92 * moving * (0.42 + 0.58 * swellRef.current)
     mat.uniforms.uSwell.value = swellRef.current
     if (ref.current) {
       // the trail has to sit behind the hull whichever way she is heading

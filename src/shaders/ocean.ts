@@ -112,8 +112,10 @@ void main() {
   float sheen = pow(max(dot(n, h), 0.0), 22.0) * 0.30;
 
   // crest foam
-  float foam = smoothstep(0.905, 0.995, vCrest) * 0.30;
-  foam += smoothstep(0.960, 1.0, vCrest) * 0.26;
+  // crest foam. A wide threshold turned whole wave faces into flat pale slabs
+  // that read as floes from a high camera, so it starts nearer the crest.
+  float foam = smoothstep(0.968, 0.999, vCrest) * 0.22;
+  foam += smoothstep(0.986, 1.0, vCrest) * 0.30;
 
   vec3 col = mix(base, uSky, fres * 0.55);
   // water reflects weakly when you look straight down at it and strongly at
