@@ -23,8 +23,10 @@ export interface FilmChapter {
   clips: Strip[]
 }
 
+import { asset } from '@/lib/asset'
+
 const S = '/assets/media/higgsfield/stills'
-export const stillFor = (clipId: string) => `${S}/${clipId}.jpg`
+export const stillFor = (clipId: string) => asset(`${S}/${clipId}.jpg`)
 
 export const film: FilmChapter[] = [
   { chapter: 'c01-port', clips: [{ id: 'c01-port', alt: 'A steel fishing vessel alongside the quay at Visakhapatnam, gantry cranes and container stacks behind her' }] },

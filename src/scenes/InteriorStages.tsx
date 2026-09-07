@@ -4,6 +4,7 @@ import { useFrame } from '@react-three/fiber'
 import { ScrubbedModel, Model } from './kit'
 import { scrollRef } from '@/store/useStore'
 import { chapters, clamp01, localProgress, smoothstep } from '@/timeline/chapters'
+import { asset } from '@/lib/asset'
 
 const ch = (id: string) => chapters.find((c) => c.id === id)!
 
@@ -83,7 +84,7 @@ export function HoldStage() {
   return (
     <group>
       <ScrubbedModel
-        url="/assets/models/ocean/onboard_chilled_storage.glb"
+        url={asset("/assets/models/ocean/onboard_chilled_storage.glb")}
         playhead={() => 0.18 + localProgress(scrollRef.current, hold) * 0.25}
       />
       <Particles count={180} box={[5.4, 2.6, 4.4]} color="#cfe9f5" size={0.035} rise={0.18} opacity={0.35} position={[0, 0.3, 0]} />
@@ -104,7 +105,7 @@ export function QuayStage() {
   return (
     <group>
       <ScrubbedModel
-        url="/assets/models/export/port_transfer_system.glb"
+        url={asset("/assets/models/export/port_transfer_system.glb")}
         playhead={() => localProgress(scrollRef.current, c)}
       />
       <hemisphereLight args={['#cfe6f0', '#7d8a86', 0.55]} />
@@ -118,7 +119,7 @@ export function PlantStage() {
   return (
     <group>
       <ScrubbedModel
-        url="/assets/models/processing/processing_facility.glb"
+        url={asset("/assets/models/processing/processing_facility.glb")}
         playhead={() => clamp01(localProgress(scrollRef.current, arrival) * 0.55)}
       />
       <hemisphereLight args={['#f4fbff', '#93a6ad', 0.66]} />
@@ -156,12 +157,12 @@ export function PondsStage() {
   return (
     <group>
       <ScrubbedModel
-        url="/assets/models/ponds/andhra_pond_grid.glb"
+        url={asset("/assets/models/ponds/andhra_pond_grid.glb")}
         playhead={() => localProgress(scrollRef.current, pond)}
       />
       {/* product-form display, clear of the pond sampling station */}
       <group ref={forms} position={[-30, 1.16, 4]} scale={0.62}>
-        <Model url="/assets/models/products/shrimp_product_forms.glb" rotation={[0, Math.PI / 2, 0]} />
+        <Model url={asset("/assets/models/products/shrimp_product_forms.glb")} rotation={[0, Math.PI / 2, 0]} />
         <mesh position={[0, -0.10, 0]}>
           <boxGeometry args={[9.6, 0.14, 3.0]} />
           <meshStandardMaterial color="#c8d2d6" roughness={0.28} metalness={0.85} />
@@ -182,7 +183,7 @@ export function QCStage() {
   return (
     <group>
       <ScrubbedModel
-        url="/assets/models/qc/qc_lab_station.glb"
+        url={asset("/assets/models/qc/qc_lab_station.glb")}
         playhead={() => localProgress(scrollRef.current, c)}
       />
       <hemisphereLight args={['#f6fbff', '#9aacb3', 0.64]} />
@@ -201,7 +202,7 @@ export function FreezeStage() {
   return (
     <group>
       <ScrubbedModel
-        url="/assets/models/cold-chain/freezing_glazing_system.glb"
+        url={asset("/assets/models/cold-chain/freezing_glazing_system.glb")}
         playhead={() => localProgress(scrollRef.current, c)}
       />
       {/* frost along the IQF tunnel */}
@@ -227,7 +228,7 @@ export function ColdStoreStage() {
   return (
     <group>
       <ScrubbedModel
-        url="/assets/models/cold-chain/cold_storage_700_pallets.glb"
+        url={asset("/assets/models/cold-chain/cold_storage_700_pallets.glb")}
         playhead={() => localProgress(scrollRef.current, c) * 0.42}
       />
       <Particles count={200} box={[36, 5, 20]} color="#cfe4f2" size={0.10} rise={0.06} opacity={0.14} position={[0, 1, 0]} />
@@ -245,7 +246,7 @@ export function DocsStage() {
   return (
     <group>
       <ScrubbedModel
-        url="/assets/models/export/export_documents.glb"
+        url={asset("/assets/models/export/export_documents.glb")}
         playhead={() => localProgress(scrollRef.current, c)}
       />
       <ambientLight intensity={0.30} color="#f0f6f8" />
@@ -260,14 +261,14 @@ export function ReeferStage() {
   return (
     <group>
       <ScrubbedModel
-        url="/assets/models/containers/reefer_container.glb"
+        url={asset("/assets/models/containers/reefer_container.glb")}
         playhead={() => localProgress(scrollRef.current, c)}
       />
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]}>
         <planeGeometry args={[160, 160]} />
         <meshStandardMaterial color="#8f9a99" roughness={0.95} />
       </mesh>
-      <Model url="/assets/models/export/port_transfer_system.glb" position={[-4, 0.02, 26]} rotation={[0, Math.PI, 0]} scale={1} />
+      <Model url={asset("/assets/models/export/port_transfer_system.glb")} position={[-4, 0.02, 26]} rotation={[0, Math.PI, 0]} scale={1} />
       <hemisphereLight args={['#cfe6f0', '#7d8a86', 0.55]} />
       <directionalLight position={[24, 30, 16]} intensity={2.4} color="#fff2dd" />
     </group>
@@ -292,7 +293,7 @@ export function FleetStage() {
         <meshStandardMaterial color="#0d5b74" roughness={0.15} metalness={0.1} />
       </mesh>
       <group ref={ship}>
-        <Model url="/assets/models/vessels/container_vessel_export.glb" />
+        <Model url={asset("/assets/models/vessels/container_vessel_export.glb")} />
       </group>
       <hemisphereLight args={['#bfe0ec', '#0a4457', 0.55]} />
       <directionalLight position={[180, 260, 140]} intensity={2.8} color="#fff3e0" />
@@ -315,7 +316,7 @@ export function GlobeStage() {
   return (
     <group>
       <group ref={g}>
-        <Model url="/assets/models/export/globe_routes_from_india.glb" />
+        <Model url={asset("/assets/models/export/globe_routes_from_india.glb")} />
       </group>
       <ambientLight intensity={0.16} color="#9fc8dc" />
       {/* the key sits off-axis so the sphere keeps a terminator; a light straight

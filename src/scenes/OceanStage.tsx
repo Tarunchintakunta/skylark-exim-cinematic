@@ -5,6 +5,7 @@ import { ScrubbedModel, Model, ModelPart } from './kit'
 import { makeOceanMaterial, gerstnerGLSL, swellRef } from '@/shaders/ocean'
 import { scrollRef } from '@/store/useStore'
 import { chapters, clamp01, localProgress, smoothstep } from '@/timeline/chapters'
+import { asset } from '@/lib/asset'
 
 const ch = (id: string) => chapters.find((c) => c.id === id)!
 
@@ -382,7 +383,7 @@ function FishingAction() {
   return (
     <group>
       <ScrubbedModel
-        url="/assets/models/ocean/fishing_action.glb"
+        url={asset("/assets/models/ocean/fishing_action.glb")}
         playhead={() => {
           const p = scrollRef.current
           // the haul runs across both chapters: gear away, then catch aboard
@@ -432,13 +433,13 @@ function CatchStation() {
 
       {/* heroes, laid on the ice */}
       <ModelPart
-        url="/assets/models/products/swordfish_hero.glb"
+        url={asset("/assets/models/products/swordfish_hero.glb")}
         node="Swordfish_OnDeck"
         position={[0.15, 0.85, -0.42]}
         rotation={[0, 0.04, 0]}
       />
       <ModelPart
-        url="/assets/models/products/tuna_hero.glb"
+        url={asset("/assets/models/products/tuna_hero.glb")}
         node="Tuna_OnDeck"
         position={[-0.30, 0.84, 0.50]}
         rotation={[0, -0.06, 0]}
@@ -455,7 +456,7 @@ function CatchStation() {
           <meshStandardMaterial color="#dceff7" roughness={0.3} />
         </mesh>
         <Model
-          url="/assets/models/products/supporting_ocean_fish.glb"
+          url={asset("/assets/models/products/supporting_ocean_fish.glb")}
           position={[0.34, 0.58, -0.46]}
           rotation={[Math.PI / 2, 0, -0.30]}
           scale={0.46}
@@ -548,7 +549,7 @@ export function OceanStage({ quality }: { quality: string }) {
       <group ref={vessel} position={[0, 0.35, 0]} rotation={[0, -0.1, 0]}>
         <ScrubbedModel
           groupRef={vesselModel}
-          url="/assets/models/vessels/large_fishing_vessel.glb"
+          url={asset("/assets/models/vessels/large_fishing_vessel.glb")}
           playhead={() => localProgress(scrollRef.current, netsCh) * 0.42}
         />
         <group ref={catchGrp} position={[-4.8, 2.42, -1.2]}>
@@ -561,14 +562,14 @@ export function OceanStage({ quality }: { quality: string }) {
 
       <group ref={nets} position={[-6, -1.2, -10]} rotation={[0, 0.5, 0]}>
         <ScrubbedModel
-          url="/assets/models/ocean/fishing_nets_and_ropes.glb"
+          url={asset("/assets/models/ocean/fishing_nets_and_ropes.glb")}
           playhead={() => localProgress(scrollRef.current, netsCh)}
         />
       </group>
 
       {/* the export vessel waiting deeper in the port */}
       <Model
-        url="/assets/models/vessels/container_vessel_export.glb"
+        url={asset("/assets/models/vessels/container_vessel_export.glb")}
         position={[-330, 0, -430]}
         rotation={[0, 0.22, 0]}
         scale={0.9}

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useProgress } from '@react-three/drei'
 import { useStore } from '@/store/useStore'
 import { cinematicPlates } from '@/data/cinematicPlates'
+import { asset } from '@/lib/asset'
 
 export function Loader() {
   const { progress: glProgress, active } = useProgress()
@@ -89,7 +90,7 @@ export function NoWebGL() {
       ].map(([label, file]) => (
         <div key={file}>
           <h3>{label}</h3>
-          <img className="shot" src={`/assets/media/higgsfield/stills/${file}.jpg`} alt={label} />
+          <img className="shot" src={asset(`/assets/media/higgsfield/stills/${file}.jpg`)} alt={label} />
         </div>
       ))}
       <p style={{ marginTop: 40 }}>

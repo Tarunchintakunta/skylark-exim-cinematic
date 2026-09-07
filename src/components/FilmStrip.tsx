@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { scrollRef, useStore } from '@/store/useStore'
 import { chapters, clamp01 } from '@/timeline/chapters'
 import { film, stillFor } from '@/data/cinematicPlates'
+import { asset } from '@/lib/asset'
 
 /**
  * The film, scrubbed frame by frame against the scroll.
@@ -83,7 +84,8 @@ export function FilmStrip() {
     const url = (clip: string, i: number, small: boolean) => {
       const p = profile()
       const n = String(i + 1).padStart(4, '0')
-      return small || !avif ? `${p.dir}/${clip}/${n}.webp` : `${p.dir}/${clip}/${n}.avif`
+      const ext = small || !avif ? 'webp' : 'avif'
+      return asset(`${p.dir}/${clip}/${n}.${ext}`)
     }
 
     function pump() {
@@ -279,7 +281,7 @@ export function FilmStrip() {
 
     ;(async () => {
       avif = await probeAvif()
-      const res = await fetch('/assets/frames/frames.json')
+      const res = await fetch(asset('/assets/frames/frames.json'))
       manifest = (await res.json()) as FrameManifest
       if (!alive) return
       loadStrip(FILM[0].clip)
