@@ -161,7 +161,19 @@ with no `QA_URL` it targets the dev server on port 5173.
 make. It throttles the connection to 6 Mbit, scrolls steadily, and samples the
 canvas: if the picture has not changed between two samples while the scroll is
 still moving, the film is stuck. It reports that as a percentage and breaks it
-down by chapter. `SPAN` sets the scroll speed, `QA_URL` the target.
+down by chapter. `SPAN` sets the scroll speed, `LATENCY` the emulated round trip, `QA_URL` the
+target.
+
+Two things were tried and rejected here, both of which look obviously right and
+measure worse. Raising the number of requests in flight hands the ordering
+decision to the browser's own connection queue, which is first-in-first-out, so
+the priority queue stops applying: at a 300 ms round trip it took a scroll from
+34 per cent stuck to 60. Tiling the proxy frames into one atlas per chapter, or
+into bands of twelve, turns fifty requests into one or five, but a tile is
+all-or-nothing: you wait a third of a second for twelve frames instead of
+twenty-five milliseconds for the one you need, and a reading-pace scroll went
+from 1 per cent stuck to 38. Individual frames, ordered by what the reader is
+about to see, degrade gracefully; batched ones do not.
 
 `node scripts/smooth.mjs` reports frame times under a real wheel rather than a
 scripted jump, and `node scripts/gpucheck.mjs` runs headed, which matters

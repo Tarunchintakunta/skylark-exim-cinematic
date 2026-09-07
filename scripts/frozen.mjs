@@ -12,7 +12,7 @@ const p = await b.newPage({ viewport: { width: 1440, height: 900 } })
 const cdp = await p.context().newCDPSession(p)
 await cdp.send('Network.enable')
 await cdp.send('Network.emulateNetworkConditions', {
-  offline: false, latency: 90,
+  offline: false, latency: Number(process.env.LATENCY ?? 90),
   downloadThroughput: (6 * 1024 * 1024) / 8,   // 6 Mbps, an ordinary connection
   uploadThroughput: (1 * 1024 * 1024) / 8,
 })
