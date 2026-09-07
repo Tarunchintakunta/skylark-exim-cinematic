@@ -353,14 +353,17 @@ export const assetManifest: AssetEntry[] = [
       'person in the water, no red meat, no deformed hands, no text, no blur). Job ids are ' +
       'in collector/image_jobs.json.',
     scaleNotes:
-      '16:9. Stills at native generation size, 2752 wide (nano_banana_pro 2k) or 3840 wide ' +
-      '(the four 4k regenerations: nets, cutting, ponds, shrimp; 5504-wide masters in ' +
-      'media-src/stills). Strips are AVIF at 1920x1080 for desktop and 1280x720 for ' +
-      'mobile, with a 640-wide WebP of every frame as the instant-load and no-AVIF path. ' +
-      'The 1080p masters stay in media-src/video so the strips can be rebuilt.',
+      '16:9. Strips are AVIF at 1920x1080 for desktop and 1280x720 for mobile, with a ' +
+      '640-wide WebP of every frame as the fast-scroll proxy and the no-AVIF path. The ' +
+      'served stills are 1920 wide to match, because they only ever paint at viewport ' +
+      'size; at native generation width they were up to 1.7 MB each and took bandwidth ' +
+      'from the frames being scrubbed. Full-resolution masters (2752, 3840, and 5504-wide ' +
+      'originals) stay in media-src/stills, and the 1080p clips in media-src/video.',
     optimizationNotes:
-      'Posters 15 MB across eighteen files, fetched one chapter ahead. The scrubber holds ' +
-      'three strips at a time and closes the rest; a decoded 1920x1080 frame is 8.3 MB.',
+      'Stills 5.6 MB across eighteen files. A decoded 1920x1080 frame is 8.3 MB and does ' +
+      'not sit on the JS heap, so holding whole strips either side of the reader cost over ' +
+      'a gigabyte and froze the page; the scrubber now keeps a 640-wide proxy of every ' +
+      'frame in reach and full resolution only within six frames of the playhead.',
     fallbackPath: `${F}/`,
   },
 ]

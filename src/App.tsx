@@ -1,6 +1,6 @@
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { AdaptiveDpr, Preload } from '@react-three/drei'
+import { Preload } from '@react-three/drei'
 import * as THREE from 'three'
 import { useStore } from '@/store/useStore'
 import { useScrollTimeline } from '@/timeline/useScrollTimeline'
@@ -42,6 +42,19 @@ const bounds = (id: string): [number, number] => {
 }
 
 const MOUNT_PAD = 0.035
+/**
+ * The globe is the one district that still builds, and standing it up costs
+ * real time: a WebGL context, shader compilation, the GLB, and a generated
+ * environment map. All of that used to land on the frame the reader scrolled
+ * into the chapter, which showed up as a stall approaching a second long. It
+ * mounts a long way early instead, while the film is still covering it, so the
+ * cost is paid during a quiet stretch and the chapter is warm on arrival.
+ */
+const GLOBE_WARMUP = 0.22
+/* how finely stage mounting tracks the scroll: 120 steps over the whole film
+   is far finer than MOUNT_PAD needs and costs 120 re-renders instead of
+   thousands */
+const MOUNT_BUCKETS = 120
 
 /**
  * Which districts still get built.
@@ -73,7 +86,12 @@ export default function App() {
   const spacer = useRef<HTMLDivElement>(null)
   const veil = useRef<HTMLDivElement>(null)
   const quality = useStore((s) => s.quality)
-  const progress = useStore((s) => s.progress)
+  /* Selecting raw progress re-rendered this component, and so reconciled the
+     whole tree, on every single scroll frame. Mounting only cares roughly
+     where the reader is, so quantise it and let Zustand skip the re-render
+     until the bucket actually changes. */
+  const bucket = useStore((s) => Math.round(s.progress * MOUNT_BUCKETS))
+  const progress = bucket / MOUNT_BUCKETS
   const webglOk = useStore((s) => s.webglOk)
   const setWebglOk = useStore((s) => s.setWebglOk)
   const [mounted, setMounted] = useState<Record<string, boolean>>({ ocean: true })
@@ -96,8 +114,8 @@ export default function App() {
     let changed = false
     Object.keys(STAGE_RANGE).forEach((id) => {
       const [lo, hi] = bounds(id)
-      const on =
-        LIVE_STAGES.has(id) && progress > lo - MOUNT_PAD && progress < hi + MOUNT_PAD
+      const pad = id === 'globe' ? GLOBE_WARMUP : MOUNT_PAD
+      const on = LIVE_STAGES.has(id) && progress > lo - pad && progress < hi + pad
       next[id] = on
       if (!!mounted[id] !== on) changed = true
     })
@@ -116,6 +134,13 @@ export default function App() {
     () => (quality === 'low' ? [1, 1.25] : quality === 'medium' ? [1, 1.5] : [1, 1.75]),
     [quality],
   )
+
+  /* Mounted early so the context, the shaders and the environment map are all
+     built during a quiet stretch, but only drawing once the reader is close:
+     on a weak GPU, rendering the globe for the last third of the page would
+     take frames away from the film that is still covering it. Preload does the
+     compiling at mount, which is the part that used to stall. */
+  const globeNear = progress > bounds('globe')[0] - MOUNT_PAD
 
   const visible = useCallback(
     (id: string) => {
@@ -139,7 +164,7 @@ export default function App() {
           /* Only the globe district builds, so outside it there is nothing to
              draw. On demand means React Three Fiber renders when something asks
              it to instead of every frame behind an opaque plate. */
-          frameloop={mounted.globe ? 'always' : 'demand'}
+          frameloop={globeNear ? 'always' : 'demand'}
           gl={{
             antialias: quality !== 'low',
             powerPreference: 'high-performance',
@@ -152,6 +177,13 @@ export default function App() {
           camera={{ fov: 46, near: 0.1, far: 6000, position: [-46, 2.6, 34] }}
           onCreated={(state) => {
             const { gl, scene } = state
+            /* Three.js asks the driver for the shader link log as soon as it
+               builds a program, and that call blocks until the driver has
+               finished compiling. It was the single longest stall on the page,
+               around 800ms as the reader reached the globe. Turning the check
+               off lets the driver compile in its own time; it only ever
+               suppressed a console message we do not read in production. */
+            gl.debug.checkShaderErrors = false
             gl.toneMapping = THREE.ACESFilmicToneMapping
             gl.toneMappingExposure = 0.98
             gl.outputColorSpace = THREE.SRGBColorSpace
@@ -230,7 +262,6 @@ export default function App() {
             )}
             <Preload all />
           </Suspense>
-          <AdaptiveDpr pixelated={false} />
         </Canvas>
       </div>
       )}

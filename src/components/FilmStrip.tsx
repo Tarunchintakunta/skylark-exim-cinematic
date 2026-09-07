@@ -14,9 +14,20 @@ import { asset } from '@/lib/asset'
  * 2D canvas. One frame per scroll position, exactly, and one composited layer
  * for the whole film instead of one per chapter.
  *
- * Decoded frames are uncompressed: a 1920x1080 bitmap is 8.3 MB, so a 40-frame
- * strip costs about 330 MB. Nothing may hold more than a few strips at once,
- * which is what the eviction window below is for.
+ * Decoded frames are uncompressed and they do not sit on the JS heap, so
+ * nothing warns you before the machine starts to swap: one 1920x1080 bitmap is
+ * 8.3 MB and a fifty-frame strip is 415 MB. Carrying whole strips either side
+ * of the reader put over a gigabyte of bitmaps in flight and cost frames of
+ * 800 ms. The strip is therefore carried at two resolutions instead:
+ *
+ *   - a 640-wide proxy of *every* frame in reach, 0.9 MB each, so any scroll
+ *     position always has a real frame to draw and scrubbing never freezes;
+ *   - the full-resolution frame only within a small window either side of the
+ *     playhead, which is the only part the reader is actually looking at.
+ *
+ * Requests are served nearest-the-playhead first and in the direction of
+ * travel, so the frame about to be seen loads ahead of the one already passed,
+ * and anything that falls out of the window is aborted rather than waited on.
  */
 
 interface FrameManifest {
@@ -41,7 +52,21 @@ const FILM = film.flatMap((f) => {
   }))
 })
 
-type Strip = { count: number; bmp: (ImageBitmap | null)[]; q: Uint8Array }
+type Strip = {
+  count: number
+  /** 640-wide proxy of every frame: cheap, and it means we are never blank */
+  small: (ImageBitmap | null)[]
+  /** full-resolution frames, only near the playhead */
+  full: (ImageBitmap | null)[]
+  asked: Uint8Array
+}
+
+/** full-resolution frames held either side of the playhead */
+const FULL_RADIUS = 6
+/** how many strips either side keep their proxy */
+const KEEP_NEAR = 1
+/** six at a time keeps the connection busy without piling up decodes */
+const MAX_INFLIGHT = 6
 
 const AVIF_PROBE =
   'data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAABcAAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAAEAAAABAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQ0MAAAAABNjb2xybmNseAACAAIABoAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAAB9tZGF0EgAKCBgABogQEAwgMg8f8D///8WfhwB8+ErK42A='
@@ -71,101 +96,174 @@ export function FilmStrip() {
     let avif = false
     let isMobile = window.matchMedia('(max-width: 767px)').matches
     const strips: Record<string, Strip> = {}
-    const queue: { clip: string; i: number; url: string; q: number }[] = []
-    let inflight = 0
-    const state = { clip: '', frame: 0, dirty: true }
-    let lastVis = -1
     const posters: Record<string, HTMLImageElement> = {}
+
+    type Job = { clip: string; i: number; full: boolean; ctrl: AbortController }
+    const queue: Job[] = []
+    const inflight = new Set<Job>()
+    const state = { clip: '', next: '', frame: 0, dir: 1, dirty: true }
+    let lastVis = -1
 
     const profile = () => (isMobile ? manifest!.mobile : manifest!.desktop)
 
-    // the small webp loads first and stands in until the avif arrives; without
-    // avif it is the strip, soft but still one frame per scroll position
-    const url = (clip: string, i: number, small: boolean) => {
+    const url = (clip: string, i: number, full: boolean) => {
       const p = profile()
       const n = String(i + 1).padStart(4, '0')
-      const ext = small || !avif ? 'webp' : 'avif'
+      const ext = full && avif ? 'avif' : 'webp'
       return asset(`${p.dir}/${clip}/${n}.${ext}`)
     }
 
+    /**
+     * What a job is worth to the reader right now: how many frames away it is,
+     * with anything behind the direction of travel pushed back, anything in
+     * another strip pushed back further, and full-resolution work behind the
+     * proxy that keeps the canvas moving.
+     */
+    const cost = (j: Job) => {
+      if (j.clip === state.clip) {
+        const d = j.i - state.frame
+        const ahead = d * state.dir >= 0
+        return Math.abs(d) * (ahead ? 1 : 4) + (j.full ? 60 : 0)
+      }
+      // The opening of the chapter about to arrive matters more than sharpening
+      // the one being left, or the cut lands on a frame that is not there yet.
+      if (j.clip === state.next && !j.full) return 120 + j.i
+      return 5000 + j.i
+    }
+
     function pump() {
-      while (alive && inflight < 6 && queue.length) {
-        const job = queue.shift()!
-        inflight++
-        fetch(job.url)
+      while (alive && inflight.size < MAX_INFLIGHT && queue.length) {
+        // nearest the playhead first, rather than whatever was asked for first
+        let best = 0
+        let bestCost = cost(queue[0])
+        for (let k = 1; k < queue.length; k++) {
+          const c = cost(queue[k])
+          if (c < bestCost) {
+            bestCost = c
+            best = k
+          }
+        }
+        const job = queue.splice(best, 1)[0]
+        if (!strips[job.clip]) continue
+        inflight.add(job)
+        fetch(url(job.clip, job.i, job.full), { signal: job.ctrl.signal })
           .then((r) => (r.ok ? r.blob() : Promise.reject(r.status)))
           .then((b) => createImageBitmap(b))
           .then((bmp) => {
-            const s = strips[job.clip]
-            if (!s || !alive) return bmp.close?.()
-            if (job.q >= s.q[job.i]) {
-              s.bmp[job.i]?.close?.()
-              s.bmp[job.i] = bmp
-              s.q[job.i] = job.q
+            const st = strips[job.clip]
+            if (!alive || !st) return bmp.close?.()
+            const slot = job.full ? st.full : st.small
+            if (slot[job.i]) bmp.close?.()
+            else {
+              slot[job.i] = bmp
               if (job.clip === state.clip) state.dirty = true
-            } else bmp.close?.()
+            }
           })
           .catch(() => {})
           .finally(() => {
-            inflight--
+            inflight.delete(job)
             pump()
           })
       }
     }
 
-    const enqueue = (clip: string, i: number, proxy: boolean) => {
+    const ask = (clip: string, i: number, full: boolean) => {
       const s = strips[clip]
-      const q = proxy ? 1 : 2
-      if (!s || s.q[i] >= q) return
-      queue.push({ clip, i, url: url(clip, i, proxy), q })
+      if (!s) return
+      const bit = full ? 2 : 1
+      if (s.asked[i] & bit) return
+      if ((full ? s.full : s.small)[i]) return
+      s.asked[i] |= bit
+      queue.push({ clip, i, full, ctrl: new AbortController() })
     }
 
-    function loadStrip(clip: string) {
+    function openStrip(clip: string) {
       if (strips[clip] || !manifest) return
       const count = profile().clips[clip]
       if (!count) return
-      strips[clip] = { count, bmp: new Array(count).fill(null), q: new Uint8Array(count) }
-      // the small strip first, so scrubbing works before the full one lands
-      for (let i = 0; i < count; i++) enqueue(clip, i, true)
-      if (!avif) return pump()
-      let start = 0
-      const batch = () => {
-        if (!alive || !strips[clip]) return
-        const end = Math.min(start + 24, count)
-        for (let i = start; i < end; i++) enqueue(clip, i, false)
-        start = end
-        pump()
-        if (start < count) setTimeout(batch, 260)
+      strips[clip] = {
+        count,
+        small: new Array(count).fill(null),
+        full: new Array(count).fill(null),
+        asked: new Uint8Array(count),
       }
-      batch()
+      // the proxy of the whole strip: this is what makes scrubbing continuous
+      for (let i = 0; i < count; i++) ask(clip, i, false)
       pump()
+    }
+
+    /**
+     * Full resolution only where the reader is; drop and abort the rest.
+     *
+     * While the reader is moving quickly a full frame cannot arrive before it
+     * is already behind them, so asking for one only takes bandwidth from the
+     * proxy that is actually being drawn. Moving fast therefore narrows the
+     * window to the frame in hand, and the rest fills in when the scroll
+     * settles.
+     */
+    function windowFull(clip: string, centre: number, radius = FULL_RADIUS) {
+      const s = strips[clip]
+      if (!s) return
+      const lo = Math.max(0, centre - radius)
+      const hi = Math.min(s.count - 1, centre + radius)
+      for (let i = lo; i <= hi; i++) ask(clip, i, true)
+      for (let i = 0; i < s.count; i++) {
+        if (i >= lo && i <= hi) continue
+        if (s.full[i]) {
+          s.full[i]!.close?.()
+          s.full[i] = null
+          s.asked[i] &= ~2
+        }
+      }
+      // stop fetching full frames the reader has already scrolled past
+      for (let k = queue.length - 1; k >= 0; k--) {
+        const j = queue[k]
+        if (j.full && j.clip === clip && (j.i < lo || j.i > hi)) {
+          s.asked[j.i] &= ~2
+          queue.splice(k, 1)
+        }
+      }
+      for (const j of inflight) {
+        if (j.full && j.clip === clip && (j.i < lo || j.i > hi)) {
+          s.asked[j.i] &= ~2
+          j.ctrl.abort()
+        }
+      }
     }
 
     function release(clip: string) {
       const s = strips[clip]
       if (!s) return
-      s.bmp.forEach((b) => b?.close?.())
+      s.small.forEach((b) => b?.close?.())
+      s.full.forEach((b) => b?.close?.())
       delete strips[clip]
+      for (let k = queue.length - 1; k >= 0; k--) if (queue[k].clip === clip) queue.splice(k, 1)
+      for (const j of inflight) if (j.clip === clip) j.ctrl.abort()
     }
 
-    /** keep the current strip and one either side; hand the rest back */
+    /** carry the strip in hand and its immediate neighbours; free the rest */
     function evict(clip: string) {
       const i = FILM.findIndex((f) => f.clip === clip)
       if (i < 0) return
-      const keep = new Set([clip])
-      if (FILM[i - 1]) keep.add(FILM[i - 1].clip)
-      if (FILM[i + 1]) keep.add(FILM[i + 1].clip)
+      const keep = new Set<string>([clip])
+      for (let k = 1; k <= KEEP_NEAR; k++) {
+        if (FILM[i + k]) keep.add(FILM[i + k].clip)
+        if (FILM[i - k]) keep.add(FILM[i - k].clip)
+      }
       for (const k of Object.keys(strips)) if (!keep.has(k)) release(k)
-      for (let n = queue.length - 1; n >= 0; n--) if (!strips[queue[n].clip]) queue.splice(n, 1)
     }
 
-    const nearest = (clip: string, i: number) => {
+    /** the sharpest thing we have at or near this frame */
+    const pick = (clip: string, i: number) => {
       const s = strips[clip]
       if (!s) return null
-      if (s.bmp[i]) return s.bmp[i]
+      if (s.full[i]) return s.full[i]
+      if (s.small[i]) return s.small[i]
       for (let d = 1; d < s.count; d++) {
-        if (s.bmp[i - d]) return s.bmp[i - d]
-        if (s.bmp[i + d]) return s.bmp[i + d]
+        if (s.small[i - d]) return s.small[i - d]
+        if (s.small[i + d]) return s.small[i + d]
+        if (s.full[i - d]) return s.full[i - d]
+        if (s.full[i + d]) return s.full[i + d]
       }
       return null
     }
@@ -193,7 +291,7 @@ export function FilmStrip() {
 
     function paint() {
       if (!state.dirty) return
-      const bmp = nearest(state.clip, state.frame)
+      const bmp = pick(state.clip, state.frame)
       if (bmp) {
         state.dirty = false
         drawCover(bmp, bmp.width, bmp.height)
@@ -207,7 +305,7 @@ export function FilmStrip() {
       }
     }
 
-    // which chapter owns the canvas, and how far through it we are
+    // which strip owns the canvas, and how far through it we are
     function tick() {
       if (!alive) return
       raf = requestAnimationFrame(tick)
@@ -235,21 +333,29 @@ export function FilmStrip() {
       const count = s?.count ?? profile().clips[cur.clip] ?? 1
       // reduced motion holds the opening frame rather than animating
       const frame = reduced ? 0 : Math.min(count - 1, Math.floor(local * count))
-      if (cur.clip !== state.clip) {
+
+      if (scrollRef.velocity > 0) state.dir = 1
+      else if (scrollRef.velocity < 0) state.dir = -1
+
+      const movedStrip = cur.clip !== state.clip
+      if (movedStrip) {
         state.clip = cur.clip
-        poster(cur.clip)
-        loadStrip(cur.clip)
-        const nx = FILM[FILM.indexOf(cur) + 1]
-        if (nx) {
-          poster(nx.clip)
-          loadStrip(nx.clip)
-        }
+        openStrip(cur.clip)
         evict(cur.clip)
         state.dirty = true
       }
-      if (frame !== state.frame) {
+      state.next = FILM[FILM.indexOf(cur) + 1]?.clip ?? ''
+      if (frame !== state.frame || movedStrip) {
         state.frame = frame
         state.dirty = true
+        // how many frames this update advanced: the honest measure of "fast",
+        // because it already accounts for how long the chapter's band is
+        const perTick = (Math.abs(scrollRef.velocity) / (cur.end - cur.start)) * count
+        windowFull(cur.clip, frame, perTick > 1.5 ? 1 : FULL_RADIUS)
+        // open the next strip early enough that its opening frames are decoded
+        // before the cut, and late enough not to compete for the whole chapter
+        if (state.next && local > 0.45) openStrip(state.next)
+        pump()
       }
       paint()
     }
@@ -260,7 +366,7 @@ export function FilmStrip() {
 
     /**
      * Posters are the first paint and the stand-in while frames stream. Asking
-     * for all twenty at boot put them behind each other and behind the frame
+     * for all eighteen at boot put them behind each other and behind the frame
      * fetches, so a jump straight to a late chapter could land on a blank
      * canvas. Fetch one when its chapter comes into reach instead.
      */
@@ -284,7 +390,9 @@ export function FilmStrip() {
       const res = await fetch(asset('/assets/frames/frames.json'))
       manifest = (await res.json()) as FrameManifest
       if (!alive) return
-      loadStrip(FILM[0].clip)
+      resize()
+      openStrip(FILM[0].clip)
+      windowFull(FILM[0].clip, 0)
       state.dirty = true
     })()
 

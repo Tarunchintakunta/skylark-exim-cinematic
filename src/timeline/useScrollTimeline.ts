@@ -27,10 +27,12 @@ export function useScrollTimeline(containerRef: React.RefObject<HTMLDivElement |
     if (!reduced && !coarse) {
       // Short and tight. A long glide keeps moving after the wheel stops, which
       // reads as lag rather than smoothness when every frame is scrubbed to it.
+      // duration and lerp are two different smoothing models: passing both
+      // leaves the feel to whichever the installed version happens to prefer,
+      // so this sets lerp alone, which is the frame-rate independent one.
       lenis = new Lenis({
-        duration: 0.85,
-        lerp: 0.14,
-        wheelMultiplier: 1.25,
+        lerp: 0.12,
+        wheelMultiplier: 1,
         smoothWheel: true,
       })
       lenis.on('scroll', ScrollTrigger.update)

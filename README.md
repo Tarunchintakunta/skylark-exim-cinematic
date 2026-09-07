@@ -114,10 +114,22 @@ browsers without AVIF. `public/assets/frames/frames.json` indexes them.
 (the return and the quay transfer, the peeling line and the product forms):
 its scroll band is split between them and the film cuts halfway.
 
-Decoded frames are uncompressed: a 1920x1080 bitmap is 8.3 MB, so one strip
-costs about 330 MB resident. The scrubber holds the current strip and one
-either side and closes the rest, which is the difference between a smooth page
-and a tab that stalls.
+Decoded frames are uncompressed and they do not sit on the JS heap, so nothing
+warns you before the machine starts to swap: a 1920x1080 bitmap is 8.3 MB and a
+fifty-frame strip is 415 MB. Carrying whole strips either side of the reader put
+over a gigabyte of bitmaps in flight. The strip is carried at two resolutions
+instead: a 640-wide proxy of every frame in reach, so any scroll position always
+has a real frame to draw, and full resolution only within six frames of the
+playhead. Requests are served nearest-the-playhead first and in the direction of
+travel, anything that falls out of the window is aborted, and while the reader is
+moving quickly the full-resolution requests stop altogether, because a sharp
+frame cannot arrive before it is already behind them.
+
+That last part is what the reader actually feels. On a 6 Mbit connection the
+earlier first-come-first-served loader left the film frozen for 72 per cent of a
+reading-pace scroll, because the frames it fetched first were the ones at the
+start of the chapter rather than the ones under the playhead. It is now 2 to 5
+per cent.
 
 Chapters 1 to 7 are anchored to one hero vessel reference, so the same ship
 leaves Visakhapatnam, works the Bay and comes home.
@@ -144,6 +156,17 @@ validation. Screenshots land in `qa/shots/`, the machine-readable result in
 `qa/report.json`. Run it against the production build with
 `QA_URL=http://127.0.0.1:4173/ node scripts/qa.mjs` after `npm run preview`;
 with no `QA_URL` it targets the dev server on port 5173.
+
+`node scripts/frozen.mjs` is the one that matches the complaint people actually
+make. It throttles the connection to 6 Mbit, scrolls steadily, and samples the
+canvas: if the picture has not changed between two samples while the scroll is
+still moving, the film is stuck. It reports that as a percentage and breaks it
+down by chapter. `SPAN` sets the scroll speed, `QA_URL` the target.
+
+`node scripts/smooth.mjs` reports frame times under a real wheel rather than a
+scripted jump, and `node scripts/gpucheck.mjs` runs headed, which matters
+because headless Chrome falls back to software WebGL and will tell you the
+globe costs 76 ms a frame when on a real GPU it costs 8.
 
 `node scripts/perf.mjs` measures frame times while scrolling the whole story
 (`DPR=2` to reproduce a retina display) and `node scripts/longtasks.mjs` reports
