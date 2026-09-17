@@ -13,7 +13,7 @@ const cdp = await p.context().newCDPSession(p)
 await cdp.send('Network.enable')
 await cdp.send('Network.emulateNetworkConditions', {
   offline: false, latency: Number(process.env.LATENCY ?? 90),
-  downloadThroughput: (6 * 1024 * 1024) / 8,   // 6 Mbps, an ordinary connection
+  downloadThroughput: (Number(process.env.MBPS ?? 6) * 1024 * 1024) / 8,
   uploadThroughput: (1 * 1024 * 1024) / 8,
 })
 const SPAN = Number(process.env.SPAN ?? 0.86)
