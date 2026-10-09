@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { useFrame, useLoader } from '@react-three/fiber'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js'
 import { clamp01, lerp, smoothstep } from '@/timeline/chapters'
 
 export const DISTRICT: Record<string, [number, number, number]> = {
@@ -19,9 +20,13 @@ export const DISTRICT: Record<string, [number, number, number]> = {
   globe: [20000, -4000, 0],
 }
 
-/** Loads a GLB and returns an isolated clone with its animation clips. */
+/**
+ * Loads a GLB and returns an isolated clone with its animation clips. The
+ * shipped globe is meshopt-compressed (npm run models:globe), and the decoder
+ * is bundled rather than fetched from a CDN the way Draco's would be.
+ */
 export function useModel(url: string) {
-  const gltf = useLoader(GLTFLoader, url)
+  const gltf = useLoader(GLTFLoader, url, (l) => l.setMeshoptDecoder(MeshoptDecoder))
   return useMemo(() => {
     const scene = gltf.scene.clone(true)
     scene.traverse((o) => {
