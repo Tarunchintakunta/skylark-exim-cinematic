@@ -39,3 +39,6 @@ blender/blends/*.blend1
 
 # vercel
 .vercel
+
+# raw Chrome traces from scripts/trace.mjs (hundreds of MB)
+qa/perf/*.trace.json

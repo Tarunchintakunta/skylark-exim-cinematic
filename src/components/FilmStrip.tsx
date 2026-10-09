@@ -253,12 +253,23 @@ export function FilmStrip() {
       for (const k of Object.keys(strips)) if (!keep.has(k)) release(k)
     }
 
+    /**
+     * What each painted frame actually was, for scripts/trace.mjs: the sharp
+     * frame, the proxy of the right frame, a neighbouring frame, or the poster.
+     */
+    const stats = { full: 0, proxy: 0, near: 0, poster: 0 }
+    ;(window as unknown as { __FILM_STATS__?: typeof stats }).__FILM_STATS__ = stats
+    let picked: 'full' | 'proxy' | 'near' = 'near'
+
     /** the sharpest thing we have at or near this frame */
     const pick = (clip: string, i: number) => {
       const s = strips[clip]
       if (!s) return null
+      picked = 'full'
       if (s.full[i]) return s.full[i]
+      picked = 'proxy'
       if (s.small[i]) return s.small[i]
+      picked = 'near'
       for (let d = 1; d < s.count; d++) {
         if (s.small[i - d]) return s.small[i - d]
         if (s.small[i + d]) return s.small[i + d]
@@ -294,6 +305,7 @@ export function FilmStrip() {
       const bmp = pick(state.clip, state.frame)
       if (bmp) {
         state.dirty = false
+        stats[picked]++
         drawCover(bmp, bmp.width, bmp.height)
         return
       }
@@ -301,6 +313,7 @@ export function FilmStrip() {
       const p = poster(state.clip)
       if (p?.complete && p.naturalWidth) {
         state.dirty = false
+        stats.poster++
         drawCover(p, p.naturalWidth, p.naturalHeight)
       }
     }
