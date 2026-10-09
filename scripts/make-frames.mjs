@@ -47,13 +47,16 @@ const H = 900
 // average frame fits its budget. Calm shots keep the higher setting; the busy
 // water and nets step down. Even the floor (AVIF q28, SSIM ~0.89 against the
 // source) measured sharper than the 1080p cut it replaces (~0.88).
-const D = { dir: 'd', w: W, h: H, crop: null, proxyW: 640, proxyH: 360, fullKB: 45, proxyKB: 13 }
-const M = { dir: 'm', w: 720, h: H, crop: { left: (W - 720) / 2, top: 0, width: 720, height: H }, proxyW: 288, proxyH: 360, fullKB: 24, proxyKB: 7 }
+//
+// Proxies load for every proxyEvery-th frame; a frame between draws its
+// neighbour's proxy until the sharp one lands. On desktop the sharp frame
+// almost always lands first (proxies were under 2% of painted frames in
+// scripts/trace.mjs), so it carries a quarter of them; a phone on 4G leans on
+// them more and carries half.
+const D = { dir: 'd', w: W, h: H, crop: null, proxyW: 640, proxyH: 360, fullKB: 42, proxyKB: 13, proxyEvery: 4 }
+const M = { dir: 'm', w: 720, h: H, crop: { left: (W - 720) / 2, top: 0, width: 720, height: H }, proxyW: 288, proxyH: 360, fullKB: 24, proxyKB: 7, proxyEvery: 2 }
 const FULL_Q = [36, 28]
 const PROXY_Q = [32, 20]
-// proxies are loaded for every other frame; the frame between draws its
-// neighbour's proxy until the sharp one lands
-const PROXY_EVERY = 2
 // posters start here and step down until they fit their budget
 const POSTER_Q = 64
 const POSTER_KB = { d: 120, m: 60 }
@@ -74,9 +77,9 @@ const manifestPath = path.join(OUT, 'frames.json')
 const manifest = existsSync(manifestPath) && process.env.ONLY
   ? JSON.parse(readFileSync(manifestPath, 'utf8'))
   : { desktop: { clips: {} }, mobile: { clips: {} } }
-manifest.proxyEvery = PROXY_EVERY
-manifest.desktop = { dir: `/assets/frames/${D.dir}`, w: D.w, h: D.h, clips: manifest.desktop.clips }
-manifest.mobile = { dir: `/assets/frames/${M.dir}`, w: M.w, h: M.h, clips: manifest.mobile.clips }
+delete manifest.proxyEvery
+manifest.desktop = { dir: `/assets/frames/${D.dir}`, w: D.w, h: D.h, proxyEvery: D.proxyEvery, clips: manifest.desktop.clips }
+manifest.mobile = { dir: `/assets/frames/${M.dir}`, w: M.w, h: M.h, proxyEvery: M.proxyEvery, clips: manifest.mobile.clips }
 
 const clips = readdirSync(SRC)
   .filter((f) => f.endsWith('.mp4'))

@@ -22,7 +22,7 @@ import { asset } from '@/lib/asset'
  * of bitmaps in flight and cost frames of 800 ms. The strip is therefore
  * carried at two resolutions instead:
  *
- *   - a small proxy of every other frame in reach, so any scroll position
+ *   - a small proxy of every second or fourth frame in reach, so any scroll position
  *     always has a real frame to draw and scrubbing never freezes;
  *   - the full-resolution frame only within a small window either side of the
  *     playhead, which is the only part the reader is actually looking at.
@@ -38,10 +38,11 @@ interface Profile {
   dir: string
   w: number
   h: number
+  /** proxies exist for every proxyEvery-th frame, and the last */
+  proxyEvery: number
   clips: Record<string, number>
 }
 interface FrameManifest {
-  proxyEvery: number
   desktop: Profile
   mobile: Profile
 }
@@ -252,7 +253,7 @@ export function FilmStrip() {
     }
 
     /** the frames that carry a proxy: every proxyEvery-th, and the last */
-    const hasProxy = (s: Strip, i: number) => i % manifest!.proxyEvery === 0 || i === s.count - 1
+    const hasProxy = (s: Strip, i: number) => i % profile().proxyEvery === 0 || i === s.count - 1
 
     function openStrip(clip: string) {
       if (strips[clip] || !manifest) return
@@ -511,7 +512,8 @@ export function FilmStrip() {
       const count = profile().clips[first]
       // the loader waits for the opening poster, plus the opening proxies when
       // the film is going to scrub
-      boot.need = 1 + (reduced ? 0 : Math.ceil(count / manifest.proxyEvery) + ((count - 1) % manifest.proxyEvery ? 1 : 0))
+      const every = profile().proxyEvery
+      boot.need = 1 + (reduced ? 0 : Math.ceil(count / every) + ((count - 1) % every ? 1 : 0))
       poster(first)
       if (!reduced) {
         openStrip(first)

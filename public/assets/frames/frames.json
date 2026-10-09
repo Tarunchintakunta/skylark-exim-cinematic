@@ -3,6 +3,7 @@
   "dir": "/assets/frames/d",
   "w": 1600,
   "h": 900,
+  "proxyEvery": 4,
   "clips": {
    "c01-port": 34,
    "c02-boarding": 28,
@@ -28,6 +29,7 @@
   "dir": "/assets/frames/m",
   "w": 720,
   "h": 900,
+  "proxyEvery": 2,
   "clips": {
    "c01-port": 26,
    "c02-boarding": 21,
@@ -48,6 +50,5 @@
    "c15-reefer": 26,
    "c16-vessel": 23
   }
- },
- "proxyEvery": 2
+ }
 }
