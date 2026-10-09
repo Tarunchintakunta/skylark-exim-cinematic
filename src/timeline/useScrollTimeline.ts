@@ -3,6 +3,7 @@ import Lenis from 'lenis'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useStore, scrollRef } from '@/store/useStore'
+import { chapterAt } from '@/timeline/chapters'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -11,7 +12,7 @@ gsap.registerPlugin(ScrollTrigger)
  * the camera moves like a dolly rather than a jump cut.
  */
 export function useScrollTimeline(containerRef: React.RefObject<HTMLDivElement | null>) {
-  const setProgress = useStore((s) => s.setProgress)
+  const setChapter = useStore((s) => s.setChapter)
   const reduced = useStore((s) => s.reducedMotion)
 
   useEffect(() => {
@@ -19,7 +20,6 @@ export function useScrollTimeline(containerRef: React.RefObject<HTMLDivElement |
     if (!el) return
 
     let lenis: Lenis | null = null
-    let rafId = 0
     let tickerFn: ((t: number) => void) | null = null
 
     // Touch devices scroll better natively; smoothing them fights the platform.
@@ -36,14 +36,18 @@ export function useScrollTimeline(containerRef: React.RefObject<HTMLDivElement |
         smoothWheel: true,
       })
       lenis.on('scroll', ScrollTrigger.update)
-      // one ticker for Lenis and GSAP, rather than a second rAF racing it
+      // One ticker for Lenis and GSAP, rather than a second rAF racing it.
+      // Lenis goes first, so everything else on the ticker this frame (the
+      // film, the copy, the progress bar) reads this frame's scroll, not last
+      // frame's.
       const tick = (t: number) => lenis?.raf(t * 1000)
-      gsap.ticker.add(tick)
+      gsap.ticker.add(tick, false, true)
       gsap.ticker.lagSmoothing(0)
       tickerFn = tick
     }
 
     let lastP = 0
+    let lastChapter = -1
     const st = ScrollTrigger.create({
       trigger: el,
       start: 'top top',
@@ -54,27 +58,50 @@ export function useScrollTimeline(containerRef: React.RefObject<HTMLDivElement |
         scrollRef.velocity = p - lastP
         lastP = p
         scrollRef.current = p
-        setProgress(p)
+        // React hears about the scroll only when the chapter changes
+        const c = chapterAt(p)
+        if (c.index !== lastChapter) {
+          lastChapter = c.index
+          setChapter(c)
+        }
       },
     })
 
+    // ScrollTrigger already refreshes itself, debounced, on resize
     ScrollTrigger.refresh()
-    const onResize = () => ScrollTrigger.refresh()
-    window.addEventListener('resize', onResize)
 
     return () => {
-      window.removeEventListener('resize', onResize)
       st.kill()
-      if (rafId) cancelAnimationFrame(rafId)
       if (tickerFn) gsap.ticker.remove(tickerFn)
       lenis?.destroy()
     }
-  }, [containerRef, setProgress, reduced])
+  }, [containerRef, setChapter, reduced])
 }
 
 /** Scroll to a chapter by its normalised start. */
 export function scrollToProgress(p: number) {
   const doc = document.documentElement
   const max = doc.scrollHeight - window.innerHeight
-  window.scrollTo({ top: p * max + 4, behavior: 'smooth' })
+  const reduced = useStore.getState().reducedMotion
+  window.scrollTo({ top: p * max + 4, behavior: reduced ? 'auto' : 'smooth' })
+}
+
+/**
+ * Run `fn` on gsap.ticker with the scroll progress, only on frames where the
+ * scroll actually moved. Everything on the page that animates per frame goes
+ * through this, so there is one loop per frame and an idle page does no work.
+ */
+export function useScrollFrame(fn: (p: number) => void, deps: React.DependencyList = []) {
+  useEffect(() => {
+    let last = NaN
+    const tick = () => {
+      const p = scrollRef.current
+      if (p === last) return
+      last = p
+      fn(p)
+    }
+    gsap.ticker.add(tick)
+    return () => gsap.ticker.remove(tick)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps)
 }

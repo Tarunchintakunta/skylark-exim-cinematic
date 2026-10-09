@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { scrollRef, useStore } from '@/store/useStore'
+import { useStore } from '@/store/useStore'
 import { chapters } from '@/timeline/chapters'
-import { scrollToProgress } from '@/timeline/useScrollTimeline'
+import { scrollToProgress, useScrollFrame } from '@/timeline/useScrollTimeline'
 
 const NAV: { label: string; chapter: string }[] = [
   { label: 'Origins', chapter: 'c03-voyage' },
@@ -75,16 +75,11 @@ export function ChapterRail() {
 
 export function ProgressBar() {
   const ref = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    let raf = 0
-    const tick = () => {
-      if (ref.current) ref.current.style.width = `${scrollRef.current * 100}%`
-      raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [])
-  return <div className="progressbar" ref={ref} style={{ width: 0 }} />
+  // scaled rather than resized, so the bar never triggers layout
+  useScrollFrame((p) => {
+    if (ref.current) ref.current.style.transform = `scaleX(${p})`
+  })
+  return <div className="progressbar" ref={ref} style={{ transform: 'scaleX(0)' }} />
 }
 
 export function ClosingLine() {

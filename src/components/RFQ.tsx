@@ -1,9 +1,10 @@
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Check, Send } from 'lucide-react'
-import { scrollRef, useStore } from '@/store/useStore'
+import { useStore } from '@/store/useStore'
+import { useScrollFrame } from '@/timeline/useScrollTimeline'
 import { chapters, clamp01, smoothstep } from '@/timeline/chapters'
 
 const PRODUCTS = ['Swordfish', 'Tuna', 'Shrimp', 'Other ocean fish'] as const
@@ -46,6 +47,8 @@ const schema = z
 
 export type RFQValues = z.infer<typeof schema>
 
+const RFQ_CHAPTER = chapters.find((x) => x.id === 'c18-rfq')!
+
 export function RFQ() {
   const wrap = useRef<HTMLDivElement>(null)
   const sent = useStore((s) => s.rfqSent)
@@ -79,24 +82,18 @@ export function RFQ() {
   const products = watch('products')
   const needsForms = products?.includes('Shrimp')
 
-  useEffect(() => {
-    const c = chapters.find((x) => x.id === 'c18-rfq')!
-    let raf = 0
-    const tick = () => {
-      const p = scrollRef.current
-      const a = clamp01(smoothstep((p - (c.start + (c.end - c.start) * 0.02)) / 0.020))
-      const el = wrap.current
-      if (el) {
-        el.style.opacity = String(a)
-        el.style.transform = `translateY(${(1 - a) * 40}px)`
-        el.style.pointerEvents = a > 0.9 ? 'auto' : 'none'
-        el.style.visibility = a < 0.01 ? 'hidden' : 'visible'
-      }
-      raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [])
+  const shown = useRef(-1)
+  useScrollFrame((p) => {
+    const c = RFQ_CHAPTER
+    const a = clamp01(smoothstep((p - (c.start + (c.end - c.start) * 0.02)) / 0.020))
+    const el = wrap.current
+    if (!el || a === shown.current) return
+    shown.current = a
+    el.style.opacity = String(a)
+    el.style.transform = `translateY(${(1 - a) * 40}px)`
+    el.style.pointerEvents = a > 0.9 ? 'auto' : 'none'
+    el.style.visibility = a < 0.01 ? 'hidden' : 'visible'
+  })
 
   const onSubmit = async (values: RFQValues) => {
     // No backend is wired in this build. The payload is validated, logged and

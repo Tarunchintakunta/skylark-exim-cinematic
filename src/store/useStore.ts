@@ -1,10 +1,9 @@
 import { create } from 'zustand'
-import { chapters, chapterAt, type Chapter } from '@/timeline/chapters'
+import { chapters, type Chapter } from '@/timeline/chapters'
 
 export type Quality = 'high' | 'medium' | 'low'
 
 interface AppState {
-  progress: number
   chapter: Chapter
   chapterIndex: number
   ready: boolean
@@ -14,7 +13,8 @@ interface AppState {
   webglOk: boolean
   menuOpen: boolean
   rfqSent: boolean
-  setProgress: (p: number) => void
+  /** called by the scroll timeline only when the chapter actually changes */
+  setChapter: (c: Chapter) => void
   setReady: (r: boolean) => void
   setLoadPct: (n: number) => void
   setQuality: (q: Quality) => void
@@ -39,7 +39,6 @@ const detectReduced = () =>
   window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 export const useStore = create<AppState>((set) => ({
-  progress: 0,
   chapter: chapters[0],
   chapterIndex: 0,
   ready: false,
@@ -49,12 +48,7 @@ export const useStore = create<AppState>((set) => ({
   webglOk: true,
   menuOpen: false,
   rfqSent: false,
-  setProgress: (p) =>
-    set((s) => {
-      const c = chapterAt(p)
-      if (c.index === s.chapterIndex) return { progress: p }
-      return { progress: p, chapter: c, chapterIndex: c.index }
-    }),
+  setChapter: (c) => set({ chapter: c, chapterIndex: c.index }),
   setReady: (ready) => set({ ready }),
   setLoadPct: (loadPct) => set({ loadPct }),
   setQuality: (quality) => set({ quality }),
@@ -65,7 +59,9 @@ export const useStore = create<AppState>((set) => ({
 }))
 
 /**
- * Live scroll progress read outside React (per animation frame) so the R3F
- * render loop never triggers a React re-render.
+ * Live scroll progress, written by the master ScrollTrigger and read outside
+ * React on gsap.ticker by everything that moves per frame: the film, the copy,
+ * the progress bar, the camera. It is never React state; the store only hears
+ * about chapter changes.
  */
 export const scrollRef = { current: 0, velocity: 0 }

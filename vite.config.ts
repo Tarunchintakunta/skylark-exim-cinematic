@@ -16,10 +16,13 @@ export default defineConfig({
     chunkSizeWarningLimit: 1500,
     rollupOptions: {
       output: {
+        // three, React Three Fiber and drei are left to follow the lazy
+        // SceneCanvas import into their own chunk. Naming them here pulled
+        // shared modules (React among them) into that chunk and made the
+        // entry import it, so the whole of three loaded before first paint.
         manualChunks(id: string) {
           if (!id.includes('node_modules')) return undefined
-          if (id.includes('/three/')) return 'three'
-          if (id.includes('@react-three') || id.includes('postprocessing')) return 'r3f'
+          if (/\/node_modules\/(react|react-dom|scheduler)\//.test(id)) return 'react'
           if (id.includes('/gsap/') || id.includes('/lenis/')) return 'gsap'
           return undefined
         },

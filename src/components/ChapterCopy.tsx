@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react'
-import { scrollRef } from '@/store/useStore'
+import { useRef } from 'react'
+import { useScrollFrame } from '@/timeline/useScrollTimeline'
 import { chapters, clamp01, smoothstep, type Chapter } from '@/timeline/chapters'
 
 /**
@@ -19,13 +19,12 @@ export function ChapterCopy() {
 }
 
 function useCopyAnim(ref: React.RefObject<HTMLDivElement | null>, c: Chapter, hero = false) {
-  useEffect(() => {
-    let raf = 0
-    const span = c.end - c.start
-    const inF = span * 0.13
-    const outF = span * 0.14
-    const tick = () => {
-      const p = scrollRef.current
+  const span = c.end - c.start
+  const inF = span * 0.13
+  const outF = span * 0.14
+  const last = useRef({ a: -1, shift: NaN })
+  useScrollFrame(
+    (p) => {
       let a = 0
       let shift = 0
       if (p > c.start - inF && p < c.end + outF) {
@@ -37,18 +36,18 @@ function useCopyAnim(ref: React.RefObject<HTMLDivElement | null>, c: Chapter, he
         shift = (1 - rise) * 34 - (1 - fall) * 22
       }
       const el = ref.current
-      if (el) {
-        el.style.opacity = String(a)
-        el.style.transform = hero
-          ? `translateY(calc(-58% + ${shift}px))`
-          : `translateY(${shift}px)`
-        el.style.visibility = a < 0.008 ? 'hidden' : 'visible'
-      }
-      raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [ref, c, hero])
+      // most blocks are off screen most of the time: touch the style only
+      // when it changes, so they cost no style recalculation while parked
+      if (!el || (a === last.current.a && shift === last.current.shift)) return
+      last.current = { a, shift }
+      el.style.opacity = String(a)
+      el.style.transform = hero
+        ? `translateY(calc(-58% + ${shift}px))`
+        : `translateY(${shift}px)`
+      el.style.visibility = a < 0.008 ? 'hidden' : 'visible'
+    },
+    [ref, c, hero],
+  )
 }
 
 /**
@@ -58,20 +57,15 @@ function useCopyAnim(ref: React.RefObject<HTMLDivElement | null>, c: Chapter, he
  */
 function ScrollHint() {
   const ref = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    let raf = 0
-    const tick = () => {
-      const a = 1 - smoothstep(scrollRef.current / 0.012)
-      const el = ref.current
-      if (el) {
-        el.style.opacity = String(a)
-        el.style.visibility = a < 0.01 ? 'hidden' : 'visible'
-      }
-      raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [])
+  const last = useRef(-1)
+  useScrollFrame((p) => {
+    const a = 1 - smoothstep(p / 0.012)
+    const el = ref.current
+    if (!el || a === last.current) return
+    last.current = a
+    el.style.opacity = String(a)
+    el.style.visibility = a < 0.01 ? 'hidden' : 'visible'
+  })
   return (
     <div className="scroll-hint" ref={ref}>
       <span>Scroll to sail</span>
