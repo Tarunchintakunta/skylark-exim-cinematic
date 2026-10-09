@@ -10,7 +10,7 @@ Eighteen stills and eighteen five-second clips carry chapters 1 to 16. Sources:
 - `media-src/video/*.mp4` — the 1080p clip masters. They are not served.
 - `public/assets/frames/` — the scrub strips cut from them by
   `scripts/make-frames.mjs`, indexed by `frames.json`.
-- `public/assets/media/higgsfield/collector/image_jobs.json` — job ids.
+- `media-src/collector/image_jobs.json` — job ids.
 
 ## How it was produced
 

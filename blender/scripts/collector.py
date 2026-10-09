@@ -14,8 +14,10 @@ from _lib import ROOT, preview, reset_scene
 
 COLLECT = os.path.join(ROOT, "public", "assets", "media")
 PLATES = os.path.join(COLLECT, "fallbacks")
-TURN = os.path.join(COLLECT, "higgsfield", "collector", "turntables")
-META = os.path.join(COLLECT, "higgsfield", "collector")
+# the collector package is source material, not site content: it lives outside
+# public/ so it never ships in the production build
+META = os.path.join(ROOT, "media-src", "collector")
+TURN = os.path.join(META, "turntables")
 
 NEG_COMMON = "night, storm, dirty handling, unsafe deck, spoiled seafood, blood, gore, cartoon, low quality, illegible text, fake logos, tourist beach"
 

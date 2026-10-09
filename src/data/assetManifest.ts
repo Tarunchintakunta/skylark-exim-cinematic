@@ -328,7 +328,7 @@ export const assetManifest: AssetEntry[] = [
     name: 'Hero Asset Turntables (Blender collector)',
     type: 'render',
     sourceTool: 'blender-mcp',
-    filePath: '/assets/media/higgsfield/collector/turntables/',
+    filePath: 'media-src/collector/turntables/ (source material, not shipped)',
     scene: 'reference material for the Higgsfield collector workflow',
     status: 'verified',
     animationNotes: 'Four azimuths (30, 120, 210, 300 degrees) for each of six hero assets.',
