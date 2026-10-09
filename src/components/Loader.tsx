@@ -1,39 +1,25 @@
 import { useEffect, useState } from 'react'
-import { useProgress } from '@react-three/drei'
 import { useStore } from '@/store/useStore'
-import { cinematicPlates } from '@/data/cinematicPlates'
-import { asset } from '@/lib/asset'
+import { stillFor } from '@/data/cinematicPlates'
 
+/**
+ * What the visitor is waiting for is the opening of the film, so the loader
+ * holds until FilmStrip reports the first poster and the first strip's proxies
+ * decoded: the first scroll then always has real frames under it.
+ */
 export function Loader() {
-  const { progress: glProgress, active } = useProgress()
-  const [imgReady, setImgReady] = useState(false)
+  const progress = useStore((s) => s.loadPct)
   const [done, setDone] = useState(false)
   const setReady = useStore((s) => s.setReady)
 
-  // What the visitor is actually waiting for is the first frame of the film.
-  // Waiting on WebGL progress left the loader pinned at nought per cent, because
-  // the opening chapters no longer load any geometry at all.
   useEffect(() => {
-    const first = cinematicPlates[0]
-    if (!first) return setImgReady(true)
-    const img = new Image()
-    img.onload = () => setImgReady(true)
-    img.onerror = () => setImgReady(true)
-    img.src = first.still
-    if (img.complete) setImgReady(true)
-  }, [])
-
-  const progress = imgReady ? 100 : Math.min(92, 16 + glProgress * 0.8)
-
-  useEffect(() => {
-    if (imgReady && !active) {
-      const t = setTimeout(() => {
-        setDone(true)
-        setReady(true)
-      }, 420)
-      return () => clearTimeout(t)
-    }
-  }, [imgReady, active, setReady])
+    if (progress < 100) return
+    const t = setTimeout(() => {
+      setDone(true)
+      setReady(true)
+    }, 420)
+    return () => clearTimeout(t)
+  }, [progress, setReady])
 
   // never trap the reader behind a stalled asset
   useEffect(() => {
@@ -90,7 +76,7 @@ export function NoWebGL() {
       ].map(([label, file]) => (
         <div key={file}>
           <h3>{label}</h3>
-          <img className="shot" src={asset(`/assets/media/higgsfield/stills/${file}.jpg`)} alt={label} />
+          <img className="shot" src={stillFor(file)} alt={label} />
         </div>
       ))}
       <p style={{ marginTop: 40 }}>

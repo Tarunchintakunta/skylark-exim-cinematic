@@ -2,10 +2,11 @@
  * The film, one entry per chapter, in order.
  *
  * A chapter can carry more than one strip: the scroll band is split across
- * them so the chapter cuts from one shot to the next. `still` is each strip's
- * opening frame at full generated resolution (2752 or 3840 wide): it paints
- * first, holds while the strip streams in, and is the whole picture for a
- * reader on reduced motion. Frames live under public/assets/frames and are
+ * them so the chapter cuts from one shot to the next. stillFor() is each
+ * strip's opening frame, encoded by scripts/make-frames.mjs at the size of the
+ * frame set it stands in for (AVIF, with a WebP twin): it paints first, holds
+ * while the strip streams in, and is the whole picture for a reader on
+ * reduced motion. Frames live under public/assets/frames and are
  * indexed by frames.json; src/components/FilmStrip.tsx draws them.
  *
  * Every strip came from Higgsfield. Chapters 1 to 7 are anchored to one hero
@@ -26,7 +27,8 @@ export interface FilmChapter {
 import { asset } from '@/lib/asset'
 
 const S = '/assets/media/higgsfield/stills'
-export const stillFor = (clipId: string) => asset(`${S}/${clipId}.jpg`)
+export const stillFor = (clipId: string, mobile = false, ext: 'avif' | 'webp' = 'webp') =>
+  asset(`${S}/${mobile ? 'm/' : ''}${clipId}.${ext}`)
 
 export const film: FilmChapter[] = [
   { chapter: 'c01-port', clips: [{ id: 'c01-port', alt: 'A steel fishing vessel alongside the quay at Visakhapatnam, gantry cranes and container stacks behind her' }] },
@@ -58,9 +60,3 @@ export const film: FilmChapter[] = [
   { chapter: 'c15-reefer', clips: [{ id: 'c15-reefer', alt: 'A reefer container loaded with sealed seafood cartons' }] },
   { chapter: 'c16-vessel', clips: [{ id: 'c16-vessel', alt: 'A container vessel leaving Visakhapatnam in deep blue water' }] },
 ]
-
-/** every strip in scroll order, with the chapter it belongs to */
-export const strips = film.flatMap((f) => f.clips.map((c) => ({ ...c, chapter: f.chapter })))
-
-// the old name, kept so nothing else has to change today
-export const cinematicPlates = strips.map((s) => ({ chapter: s.chapter, still: stillFor(s.id), alt: s.alt }))

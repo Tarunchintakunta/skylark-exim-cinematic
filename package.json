@@ -8,7 +8,10 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview --port 4173 --host 127.0.0.1",
     "typecheck": "tsc -b --noEmit",
-    "qa": "node scripts/qa.mjs"
+    "qa": "node scripts/qa.mjs",
+    "frames": "node scripts/make-frames.mjs",
+    "models:globe": "gltf-transform optimize media-src/models/globe_routes_from_india.glb public/assets/models/export/globe_routes_from_india.glb --compress meshopt --texture-compress webp",
+    "perf": "node scripts/trace.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
@@ -33,12 +36,13 @@
     "@types/three": "^0.185.4",
     "@vitejs/plugin-react": "^6.1.1",
     "playwright": "^1.63.0",
+    "sharp": "^0.34.5",
     "typescript": "^5.9.3",
     "vite": "^8.2.2"
   },
   "engines": {
     "node": ">=20"
   },
-  "description": "Skylark Exim — a single-page WebGL cinematic scroll for an Indian seafood exporter.",
+  "description": "Skylark Exim \u2014 a single-page WebGL cinematic scroll for an Indian seafood exporter.",
   "license": "UNLICENSED"
 }

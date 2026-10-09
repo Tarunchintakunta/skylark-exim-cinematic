@@ -62,20 +62,26 @@ if (mobile) {
   })
 }
 
-const reqs = new Map()
+// Byte counts come from Playwright rather than the page's CDP session, which
+// does not see requests made from the frame-decoding worker.
 let bytes = 0
 const byKind = {}
 const kindOf = (u) =>
   /\/frames\//.test(u) ? 'frames' : /\/stills\//.test(u) ? 'posters' : /\.glb/.test(u) ? 'models'
     : /\.(js|css)/.test(u) ? 'code' : /fonts/.test(u) ? 'fonts' : 'other'
-cdp.on('Network.requestWillBeSent', (e) => reqs.set(e.requestId, e.request.url))
-cdp.on('Network.loadingFinished', (e) => {
-  bytes += e.encodedDataLength
-  const k = kindOf(reqs.get(e.requestId) ?? '')
-  byKind[k] = (byKind[k] ?? 0) + e.encodedDataLength
-})
+const failed = []
 const fetched = new Set()
-cdp.on('Network.requestWillBeSent', (e) => fetched.add(e.request.url))
+ctx.on('request', (r) => fetched.add(r.url()))
+ctx.on('requestfinished', async (r) => {
+  const sz = await r.sizes().catch(() => null)
+  if (!sz) return
+  const n = sz.responseBodySize + sz.responseHeadersSize
+  bytes += n
+  const k = kindOf(r.url())
+  byKind[k] = (byKind[k] ?? 0) + n
+  const res = await r.response()
+  if (res && res.status() >= 400) failed.push(`${res.status()} ${r.url()}`)
+})
 
 const t0 = Date.now()
 await page.goto(URL, { waitUntil: 'domcontentloaded' })
@@ -140,6 +146,7 @@ await page.waitForTimeout(1200)
 await browser.stopTracing()
 
 const film = await page.evaluate(() => ({ ...window.__FILM_STATS__ }))
+const scrollBytes = bytes
 const scroll = await page.evaluate(() => {
   const f = window.__P.frames.slice(5)
   const sorted = [...f].sort((a, b) => a - b)
@@ -217,9 +224,12 @@ decode.longestMainMs = Math.round(decode.longestMainMs)
 const result = {
   label: LABEL, profile: PROFILE, url: URL, loaderMs, scrollSeconds: SECONDS,
   scroll, paintedFrames: film, traceLongTasks: mainLong, decode, nav,
-  transferredMB: +(bytes / 1e6).toFixed(2),
+  // load plus one full scroll; the navigation jumps that follow are extra
+  transferredMB: +(scrollBytes / 1e6).toFixed(2),
+  navJumpsExtraMB: +((bytes - scrollBytes) / 1e6).toFixed(2),
   byKindMB: Object.fromEntries(Object.entries(byKind).map(([k, v]) => [k, +(v / 1e6).toFixed(2)])),
   requests: fetched.size,
+  failed,
   fetchedCollectorOrQa: [...fetched].filter((u) => /collector|\/qa\//.test(u)),
   fetchedModels: [...fetched].filter((u) => /\.glb/.test(u)).map((u) => u.split('/').pop()),
 }
