@@ -1,0 +1,60 @@
+{
+ "label": "step3",
+ "profile": "mobile",
+ "url": "http://127.0.0.1:4173/",
+ "loaderMs": 2449,
+ "scrollSeconds": 45,
+ "scroll": {
+  "frames": 2979,
+  "fps": 60,
+  "p50": 16.7,
+  "p95": 17.5,
+  "p99": 18,
+  "worst": 64,
+  "droppedFrames": 6,
+  "droppedPct": 0.2,
+  "longTasks": 1,
+  "longTaskMs": [
+   55
+  ],
+  "blankSamples": 0,
+  "canvasSamples": 590
+ },
+ "paintedFrames": {
+  "full": 583,
+  "proxy": 102,
+  "near": 63,
+  "poster": 1
+ },
+ "traceLongTasks": 1,
+ "longDetail": [
+  "56ms: ThreadControllerImpl::RunTask 56ms, FireIdleCallback 55ms, FunctionCall SceneCanvas-BzVDGN2j.js 55ms"
+ ],
+ "decode": {
+  "mainMs": 0,
+  "offMainMs": 891,
+  "count": 632,
+  "longestMainMs": 0
+ },
+ "nav": {
+  "jumps": 36,
+  "blankFrames": 0,
+  "frames": 2718
+ },
+ "transferredMB": 11.42,
+ "navJumpsExtraMB": 0.17,
+ "byKindMB": {
+  "other": 0,
+  "code": 0.43,
+  "fonts": 0.11,
+  "frames": 10.64,
+  "posters": 0.12,
+  "models": 0.3
+ },
+ "requests": 667,
+ "failed": [],
+ "fetchedCollectorOrQa": [],
+ "fetchedModels": [
+  "globe_routes_from_india.glb"
+ ]
+}

@@ -1,0 +1,57 @@
+{
+ "label": "step3",
+ "profile": "laptop",
+ "url": "http://127.0.0.1:4173/",
+ "loaderMs": 1128,
+ "scrollSeconds": 40,
+ "scroll": {
+  "frames": 4757,
+  "fps": 60,
+  "p50": 16.7,
+  "p95": 17.7,
+  "p99": 18.2,
+  "worst": 68,
+  "droppedFrames": 8,
+  "droppedPct": 0.2,
+  "longTasks": 1,
+  "longTaskMs": [
+   63
+  ],
+  "blankSamples": 0,
+  "canvasSamples": 943
+ },
+ "paintedFrames": {
+  "full": 975,
+  "proxy": 19,
+  "near": 9,
+  "poster": 0
+ },
+ "traceLongTasks": 1,
+ "decode": {
+  "mainMs": 0,
+  "offMainMs": 2183,
+  "count": 708,
+  "longestMainMs": 0
+ },
+ "nav": {
+  "jumps": 36,
+  "blankFrames": 0,
+  "frames": 2717
+ },
+ "transferredMB": 24.24,
+ "navJumpsExtraMB": 1.72,
+ "byKindMB": {
+  "other": 0,
+  "code": 0.43,
+  "frames": 25.01,
+  "fonts": 0.11,
+  "posters": 0.12,
+  "models": 0.3
+ },
+ "requests": 740,
+ "failed": [],
+ "fetchedCollectorOrQa": [],
+ "fetchedModels": [
+  "globe_routes_from_india.glb"
+ ]
+}

@@ -195,7 +195,7 @@ const rl = readline.createInterface({ input: createReadStream(TRACE) })
 for await (const line of rl) {
   const t = line.trim().replace(/^\{"traceEvents":\[/, '').replace(/,$/, '')
   if (!t.startsWith('{"') || !/"ph":"[XM]"/.test(t)) continue
-  if (!/thread_name|Decode|ImageBitmap|"RunTask"/.test(t)) continue
+  if (!/thread_name|Decode|ImageBitmap|"RunTask"/.test(t) && !/"dur":\d{4,}/.test(t)) continue
   try { events.push(JSON.parse(t)) } catch {}
 }
 await fs.rm(TRACE)
@@ -203,6 +203,7 @@ const threads = new Map()
 for (const e of events) if (e.ph === 'M' && e.name === 'thread_name') threads.set(`${e.pid}:${e.tid}`, e.args.name)
 const decode = { mainMs: 0, offMainMs: 0, count: 0, longestMainMs: 0 }
 let mainLong = 0
+const longTasks = []
 for (const e of events) {
   if (e.ph !== 'X' || !e.dur) continue
   const th = threads.get(`${e.pid}:${e.tid}`) ?? ''
@@ -215,15 +216,27 @@ for (const e of events) {
       decode.longestMainMs = Math.max(decode.longestMainMs, ms)
     } else decode.offMainMs += ms
   }
-  if (isMain && e.name === 'RunTask' && e.dur > 50000) mainLong++
+  if (isMain && e.name === 'RunTask' && e.dur > 50000) {
+    mainLong++
+    longTasks.push(e)
+  }
 }
+// what each long task was spent on: its longest children on the main thread
+const longDetail = longTasks.map((lt) => {
+  const kids = events
+    .filter((e) => e.ph === 'X' && e.pid === lt.pid && e.tid === lt.tid && e !== lt && e.ts >= lt.ts && e.ts + e.dur <= lt.ts + lt.dur && e.dur > 5000)
+    .sort((a, b) => b.dur - a.dur)
+    .slice(0, 4)
+    .map((e) => `${e.name}${e.args?.data?.url ? ' ' + e.args.data.url.split('/').pop() : ''}${e.args?.data?.functionName ? ' ' + e.args.data.functionName : ''} ${Math.round(e.dur / 1000)}ms`)
+  return `${Math.round(lt.dur / 1000)}ms: ${kids.join(', ')}`
+})
 decode.mainMs = Math.round(decode.mainMs)
 decode.offMainMs = Math.round(decode.offMainMs)
 decode.longestMainMs = Math.round(decode.longestMainMs)
 
 const result = {
   label: LABEL, profile: PROFILE, url: URL, loaderMs, scrollSeconds: SECONDS,
-  scroll, paintedFrames: film, traceLongTasks: mainLong, decode, nav,
+  scroll, paintedFrames: film, traceLongTasks: mainLong, longDetail, decode, nav,
   // load plus one full scroll; the navigation jumps that follow are extra
   transferredMB: +(scrollBytes / 1e6).toFixed(2),
   navJumpsExtraMB: +((bytes - scrollBytes) / 1e6).toFixed(2),
