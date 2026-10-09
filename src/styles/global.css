@@ -195,9 +195,15 @@ canvas { display: block; touch-action: pan-y; }
   color: rgba(244, 250, 250, 0.45);
   font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.14em;
 }
-.rail .tick { width: 16px; height: 1.5px; background: currentColor; transition: width 240ms ease, background 240ms ease; }
+.rail .tick {
+  /* drawn at the active length and scaled down, so the transition is a
+     transform and never relayouts the rail */
+  width: 34px; height: 1.5px; background: currentColor;
+  transform: scaleX(0.4706); transform-origin: left center;
+  transition: transform 240ms ease, background 240ms ease;
+}
 .rail button[data-active='true'] { color: var(--brass); }
-.rail button[data-active='true'] .tick { width: 34px; }
+.rail button[data-active='true'] .tick { transform: scaleX(1); }
 .rail button:hover { color: var(--ice); }
 .rail .label {
   position: absolute; left: 40px; top: 50%; transform: translateY(-50%) translateX(-4px);
@@ -207,9 +213,11 @@ canvas { display: block; touch-action: pan-y; }
 .rail button:hover .label, .rail button[data-active='true'] .label { opacity: 1; transform: translateY(-50%); }
 
 .progressbar {
-  position: fixed; left: 0; top: 0; height: 2px; z-index: 13;
+  /* full width, scaled by the scroll: a transform, so no layout per frame */
+  position: fixed; left: 0; top: 0; width: 100%; height: 2px; z-index: 13;
   background: linear-gradient(90deg, var(--sea), var(--brass));
-  transition: width 90ms linear;
+  transform-origin: left center;
+  will-change: transform;
 }
 
 /* ---------------------------------------------------------------- copy */
@@ -414,9 +422,9 @@ canvas { display: block; touch-action: pan-y; }
   font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.18em;
   text-transform: uppercase; padding: 14px 26px; border-radius: 3px;
   display: inline-flex; align-items: center; gap: 9px;
-  transition: filter 160ms ease, transform 160ms ease;
+  transition: background-color 160ms ease, transform 160ms ease;
 }
-.submit:hover { filter: brightness(1.08); }
+.submit:hover { background-color: color-mix(in srgb, var(--brass) 92%, #fff); }
 .submit:active { transform: translateY(1px); }
 .submit:disabled { opacity: 0.55; cursor: default; }
 
@@ -455,7 +463,10 @@ canvas { display: block; touch-action: pan-y; }
   text-transform: uppercase; color: var(--brass); margin-bottom: 30px;
 }
 .loader .track { height: 2px; background: rgba(244, 250, 250, 0.14); border-radius: 2px; overflow: hidden; }
-.loader .fill { height: 100%; background: linear-gradient(90deg, var(--sea), var(--brass)); transition: width 260ms ease; }
+.loader .fill {
+  height: 100%; background: linear-gradient(90deg, var(--sea), var(--brass));
+  transform-origin: left center; transition: transform 260ms ease;
+}
 .loader .pct { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em; margin-top: 12px; color: rgba(244, 250, 250, 0.55); }
 
 .nowebgl {

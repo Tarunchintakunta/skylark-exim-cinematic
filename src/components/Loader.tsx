@@ -36,7 +36,7 @@ export function Loader() {
         <div className="lm">Skylark Exim</div>
         <div className="ls">Two Origins. One Standard.</div>
         <div className="track">
-          <div className="fill" style={{ width: `${Math.max(6, progress)}%` }} />
+          <div className="fill" style={{ transform: `scaleX(${Math.max(6, progress) / 100})` }} />
         </div>
         <div className="pct">Preparing the voyage · {Math.round(progress)}%</div>
       </div>
