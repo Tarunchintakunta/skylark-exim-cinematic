@@ -11,7 +11,8 @@
     "qa": "node scripts/qa.mjs",
     "frames": "node scripts/make-frames.mjs",
     "models:globe": "gltf-transform optimize media-src/models/globe_routes_from_india.glb public/assets/models/export/globe_routes_from_india.glb --compress meshopt --texture-compress webp",
-    "perf": "node scripts/trace.mjs"
+    "perf": "node scripts/trace.mjs",
+    "bench:video": "node scripts/video-bench.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

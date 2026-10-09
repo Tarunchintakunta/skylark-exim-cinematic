@@ -5,8 +5,9 @@
  *   ONLY=c03-voyage node scripts/...        one clip
  *
  * The site draws one frame to a 2D canvas per scroll position, so the film has
- * to exist as frames, not as video: a <video> cannot be seeked accurately or
- * cheaply enough to follow a wheel (scripts/video-bench.mjs measures it).
+ * to exist as frames, not as video: even an all-keyframe video presents each
+ * seek a frame late, and at matched quality costs 1.3-4x the bytes
+ * (scripts/video-bench.mjs measures it).
  *
  * Two sets, both with a full frame and a proxy per position:
  *

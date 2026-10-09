@@ -14,7 +14,8 @@ import { asset } from '@/lib/asset'
  * as a strip of stills, and scroll position picks one and draws it to a single
  * 2D canvas. One frame per scroll position, exactly, and one composited layer
  * for the whole film instead of one per chapter. (scripts/video-bench.mjs
- * re-measured an all-keyframe video against the strips; the strips won.)
+ * re-measured an all-keyframe video against the strips: the video showed the
+ * right frame on 53% of ticks against 100%, and cost more bytes.)
  *
  * Decoded frames are uncompressed and they do not sit on the JS heap, so
  * nothing warns you before the machine starts to swap: one 1600x900 bitmap is
